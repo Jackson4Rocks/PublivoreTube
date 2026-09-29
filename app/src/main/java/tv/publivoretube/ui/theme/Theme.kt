@@ -5,5 +5,7 @@ import androidx.tv.material3.MaterialTheme
 
 @Composable
 fun PublivoreTubeTheme(content: @Composable () -> Unit) {
-    MaterialTheme(content = content)
+    MaterialTheme(
+        content = content,
+    )
 }
