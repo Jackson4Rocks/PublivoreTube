@@ -1,0 +1,92 @@
+<svg width="1600" height="520" viewBox="0 0 1600 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1600" y2="520" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B0A10"/>
+      <stop offset="0.52" stop-color="#151126"/>
+      <stop offset="1" stop-color="#0B0A10"/>
+    </linearGradient>
+    <linearGradient id="hero" x1="560" y1="70" x2="1230" y2="450" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D0BCFF"/>
+      <stop offset="0.45" stop-color="#9A82DB"/>
+      <stop offset="1" stop-color="#7D5260"/>
+    </linearGradient>
+    <linearGradient id="pink" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FF8FA3"/>
+      <stop offset="1" stop-color="#D66A8A"/>
+    </linearGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="18" stdDeviation="24" flood-color="#000000" flood-opacity=".34"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="520" rx="48" fill="url(#bg)"/>
+
+  <!-- expressive background shapes -->
+  <path d="M0 0H380C310 76 253 126 165 153C94 174 42 154 0 116V0Z" fill="#4F378B" opacity=".86"/>
+  <circle cx="1430" cy="52" r="108" fill="#7D5260" opacity=".75"/>
+  <path d="M1338 418C1360 349 1431 318 1512 339C1571 354 1594 387 1600 410V520H1338C1320 482 1321 451 1338 418Z" fill="#006874" opacity=".82"/>
+  <path d="M210 447C258 394 318 390 355 430C383 460 379 494 363 520H111C119 486 150 459 210 447Z" fill="#7D5260" opacity=".62"/>
+
+  <!-- decorative diamonds / spark -->
+  <path d="M109 233L125 249L109 265L93 249L109 233Z" fill="#E9DDFF"/>
+  <path d="M1446 222L1460 236L1446 250L1432 236L1446 222Z" fill="#FFD8E4"/>
+  <path d="M1328 115L1338 125L1328 135L1318 125L1328 115Z" fill="#C4C6FF"/>
+
+  <!-- logo tile -->
+  <g filter="url(#shadow)">
+    <rect x="92" y="112" width="164" height="164" rx="52" fill="#211F26" stroke="#49454F" stroke-width="2"/>
+    <rect x="124" y="144" width="100" height="100" rx="32" fill="#4F378B"/>
+    <path d="M164 165C164 157 173 152 180 157L206 174C213 179 213 188 206 193L180 210C173 215 164 210 164 201V165Z" fill="#F2B8B5"/>
+    <path d="M143 203C143 214 151 224 162 227V217C157 215 153 209 153 203V177C153 166 162 157 173 157V145C156 148 143 162 143 180V203Z" fill="#D0BCFF"/>
+  </g>
+
+  <!-- main title -->
+  <text x="302" y="170" fill="#F4EFF7" font-family="Arial, Helvetica, sans-serif" font-size="70" font-weight="800" letter-spacing="-2">PublivoreTube</text>
+  <text x="306" y="220" fill="#CAC4D0" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="500">YouTube, reimagined for your TV.</text>
+
+  <!-- expressive chips -->
+  <g>
+    <rect x="304" y="262" width="160" height="48" rx="24" fill="#1D1B20" stroke="#625A7A"/>
+    <circle cx="331" cy="286" r="10" fill="#D0BCFF"/>
+    <text x="351" y="294" fill="#EADDFF" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700">Android TV</text>
+  </g>
+
+  <g>
+    <rect x="478" y="262" width="210" height="48" rx="24" fill="#1D1B20" stroke="#006874"/>
+    <path d="M501 276L507 288L501 300L489 294L489 282L501 276Z" fill="#7DD8E7"/>
+    <text x="522" y="294" fill="#B6ECF5" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700">Material 3 Expressive</text>
+  </g>
+
+  <g>
+    <rect x="702" y="262" width="175" height="48" rx="24" fill="#1D1B20" stroke="#7D5260"/>
+    <path d="M728 276C737 267 748 273 748 282C748 291 737 300 737 300C737 300 726 291 726 282C726 280 727 278 728 276Z" fill="#FFB0C0"/>
+    <text x="760" y="294" fill="#FFD9E2" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700">Remote-first</text>
+  </g>
+
+  <!-- hero mock -->
+  <g filter="url(#shadow)">
+    <rect x="1020" y="72" width="486" height="332" rx="44" fill="#17151C" stroke="#49454F" stroke-width="2"/>
+    <rect x="1049" y="101" width="428" height="274" rx="30" fill="#111016"/>
+    <rect x="1071" y="123" width="78" height="230" rx="26" fill="#211F26"/>
+    <circle cx="1110" cy="155" r="10" fill="#D0BCFF"/>
+    <rect x="1092" y="189" width="36" height="8" rx="4" fill="#CAC4D0"/>
+    <rect x="1092" y="218" width="36" height="8" rx="4" fill="#79747E"/>
+    <rect x="1092" y="247" width="36" height="8" rx="4" fill="#79747E"/>
+    <rect x="1092" y="276" width="36" height="8" rx="4" fill="#79747E"/>
+    <path d="M1182 133H1428C1450 133 1467 150 1467 172V190H1182V133Z" fill="#4F378B"/>
+    <rect x="1182" y="203" width="123" height="70" rx="18" fill="#2B2930"/>
+    <rect x="1318" y="203" width="123" height="70" rx="18" fill="#2B2930"/>
+    <rect x="1182" y="290" width="123" height="70" rx="18" fill="#2B2930"/>
+    <rect x="1318" y="290" width="123" height="70" rx="18" fill="#2B2930"/>
+    <circle cx="1254" cy="237" r="18" fill="#7D5260"/>
+    <circle cx="1390" cy="237" r="18" fill="#006874"/>
+  </g>
+
+  <!-- footer line / expressive blobs -->
+  <path d="M927 468C969 425 1027 421 1066 454C1104 486 1102 520 1102 520H903C897 500 904 481 927 468Z" fill="#4F378B" opacity=".7"/>
+  <circle cx="1201" cy="478" r="22" fill="#E8DEF8"/>
+  <path d="M1262 458L1302 458L1322 478L1302 498L1262 498L1242 478L1262 458Z" fill="#FFB0C0"/>
+
+  <text x="92" y="442" fill="#CAC4D0" font-family="Arial, Helvetica, sans-serif" font-size="19" font-weight="600">Open source • Android TV • Jetpack Compose • YouTube Data API</text>
+  <text x="1508" y="466" fill="#D0BCFF" text-anchor="end" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700">Jackson4Rocks</text>
+</svg>
