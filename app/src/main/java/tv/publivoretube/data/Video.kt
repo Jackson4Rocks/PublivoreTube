@@ -6,4 +6,5 @@ data class Video(
     val channel: String,
     val duration: String,
     val thumbnail: String? = null,
+    val youtubeUrl: String? = null,
 )
