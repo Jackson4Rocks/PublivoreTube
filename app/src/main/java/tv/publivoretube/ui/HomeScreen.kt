@@ -35,10 +35,14 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
+import android.content.Intent
+import android.net.Uri
 import androidx.tv.material3.Button
 import androidx.tv.material3.Card
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Surface
+import androidx.tv.material3.SurfaceDefaults
 import androidx.tv.material3.Text
 import tv.publivoretube.data.Video
 
@@ -58,7 +62,7 @@ fun HomeScreen(
 
     Surface(
         modifier = modifier.fillMaxSize(),
-        color = Canvas,
+        colors = SurfaceDefaults.colors(containerColor = Canvas),
     ) {
         Row(
             modifier = Modifier
@@ -70,54 +74,210 @@ fun HomeScreen(
                 onSelected = { selectedNav = it },
             )
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f),
-                contentPadding = PaddingValues(
-                    start = 38.dp,
-                    end = 54.dp,
-                    top = 30.dp,
-                    bottom = 54.dp,
+            when (selectedNav) {
+                5 -> AboutScreen()
+                else -> HomeContent(
+                    videos = videos,
+                    onVideoSelected = onVideoSelected,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun HomeContent(
+    videos: List<Video>,
+    onVideoSelected: (Video) -> Unit,
+) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxHeight()
+            .weight(1f),
+        contentPadding = PaddingValues(
+            start = 38.dp,
+            end = 54.dp,
+            top = 30.dp,
+            bottom = 54.dp,
+        ),
+        verticalArrangement = Arrangement.spacedBy(34.dp),
+    ) {
+        item { TopBar() }
+
+        item {
+            HeroBanner(
+                video = videos.firstOrNull(),
+                onClick = { videos.firstOrNull()?.let(onVideoSelected) },
+            )
+        }
+
+        item {
+            ContentRow(
+                title = "Recommended for you",
+                videos = videos,
+                onVideoSelected = onVideoSelected,
+            )
+        }
+
+        item {
+            ContentRow(
+                title = "Trending now",
+                videos = videos.asReversed(),
+                onVideoSelected = onVideoSelected,
+            )
+        }
+
+        item {
+            ContentRow(
+                title = "Continue watching",
+                videos = videos.drop(1) + videos.take(1),
+                onVideoSelected = onVideoSelected,
+            )
+        }
+    }
+}
+
+@Composable
+private fun AboutScreen() {
+    val context = LocalContext.current
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxHeight()
+            .weight(1f),
+        contentPadding = PaddingValues(
+            start = 48.dp,
+            end = 72.dp,
+            top = 42.dp,
+            bottom = 56.dp,
+        ),
+        verticalArrangement = Arrangement.spacedBy(28.dp),
+    ) {
+        item {
+            Text(
+                text = "About PublivoreTube",
+                style = MaterialTheme.typography.displaySmall,
+                color = Color.White,
+            )
+        }
+
+        item {
+            Text(
+                text = "A TV-first, open-source video client foundation built for a clean 10-foot experience, D-pad navigation, modular playback, and future community-driven features.",
+                style = MaterialTheme.typography.bodyLarge,
+                color = TextMuted,
+            )
+        }
+
+        item {
+            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                Text(
+                    text = "What is PublivoreTube?",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = Color.White,
+                )
+
+                Text(
+                    text = "PublivoreTube is an experimental Android TV application. The project separates the TV interface, content providers, playback layer, and filtering features so they can evolve independently.",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = TextMuted,
+                )
+            }
+        }
+
+        item {
+            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                Text(
+                    text = "Maintainers",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = Color.White,
+                )
+
+                MaintainerCard(
+                    name = "Leon Sony",
+                    bio = "Project creator and maintainer of PublivoreTube.",
+                    onGithub = {
+                        context.startActivity(
+                            Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("https://github.com/Jackson4Rocks"),
+                            ),
+                        )
+                    },
+                )
+            }
+        }
+
+        item {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text(
+                    text = "Project",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = Color.White,
+                )
+
+                Text(
+                    text = "Version 0.1.0 • Open source • Built for Android TV",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextMuted,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun MaintainerCard(
+    name: String,
+    bio: String,
+    onGithub: () -> Unit,
+) {
+    Card(
+        onClick = { },
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(18.dp),
+        ) {
+            Surface(
+                modifier = Modifier.size(72.dp),
+                shape = RoundedCornerShape(22.dp),
+                colors = SurfaceDefaults.colors(
+                    containerColor = Accent.copy(alpha = 0.22f),
+                    contentColor = AccentStrong,
                 ),
-                verticalArrangement = Arrangement.spacedBy(34.dp),
             ) {
-                item {
-                    TopBar()
-                }
-
-                item {
-                    HeroBanner(
-                        video = videos.firstOrNull(),
-                        onClick = {
-                            videos.firstOrNull()?.let(onVideoSelected)
-                        },
+                Box(contentAlignment = Alignment.Center) {
+                    Text(
+                        text = name.first().uppercase(),
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = AccentStrong,
                     )
                 }
+            }
 
-                item {
-                    ContentRow(
-                        title = "Recommended for you",
-                        videos = videos,
-                        onVideoSelected = onVideoSelected,
-                    )
-                }
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(5.dp),
+            ) {
+                Text(
+                    text = name,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color.White,
+                )
+                Text(
+                    text = bio,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextMuted,
+                )
+            }
 
-                item {
-                    ContentRow(
-                        title = "Trending now",
-                        videos = videos.asReversed(),
-                        onVideoSelected = onVideoSelected,
-                    )
-                }
-
-                item {
-                    ContentRow(
-                        title = "Continue watching",
-                        videos = videos.drop(1) + videos.take(1),
-                        onVideoSelected = onVideoSelected,
-                    )
-                }
+            Button(onClick = onGithub) {
+                Text("GitHub  ↗")
             }
         }
     }
@@ -134,13 +294,14 @@ private fun NavigationRail(
         "▤" to "Subscriptions",
         "◴" to "History",
         "⚙" to "Settings",
+        "ⓘ" to "About",
     )
 
     Surface(
         modifier = Modifier
             .width(112.dp)
             .fillMaxHeight(),
-        color = CanvasElevated,
+        colors = SurfaceDefaults.colors(containerColor = CanvasElevated),
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 24.dp),
@@ -367,10 +528,13 @@ private fun VideoCard(
                     .focusable(),
                 contentAlignment = Alignment.BottomEnd,
             ) {
-                Surface(
-                    modifier = Modifier.padding(10.dp),
-                    color = Color(0xDD000000),
-                    shape = RoundedCornerShape(8.dp),
+                Box(
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .background(
+                            color = Color(0xDD000000),
+                            shape = RoundedCornerShape(8.dp),
+                        ),
                 ) {
                     Text(
                         text = video.duration,
