@@ -1,10 +1,12 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/Jackson4Rocks/PublivoreTube/main/docs/assets/material3-expressive-banner.svg" alt="PublivoreTube Material 3 Expressive banner" width="100%"/>
+<img src="https://raw.githubusercontent.com/Jackson4Rocks/PublivoreTube/main/docs/assets/publivoretube-icon.svg" alt="PublivoreTube official icon" width="150"/>
 
-### 📺 YouTube, reimagined for your TV.
+# PublivoreTube
 
-A polished, open-source Android TV client focused on **remote-first navigation**, **Material 3 Expressive-inspired UI**, and a clean separation between **content metadata** and **playback**.
+### YouTube, reimagined for your TV.
+
+A polished, open-source Android TV client focused on **remote-first navigation**, **Material 3-inspired UI**, and a clean separation between **content metadata** and **playback**.
 
 [![Android Build](https://github.com/Jackson4Rocks/PublivoreTube/actions/workflows/android.yml/badge.svg)](https://github.com/Jackson4Rocks/PublivoreTube/actions/workflows/android.yml)
 [![Android TV](https://img.shields.io/badge/Android%20TV-8.0%2B-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://developer.android.com/tv)
@@ -21,9 +23,9 @@ PublivoreTube is my Android TV client project built around one idea:
 
 > **The TV experience should feel like a TV experience.**
 
-That means big visual targets, predictable D-pad movement, obvious focus states, comfortable spacing, and a UI that feels expressive without becoming noisy.
+Big visual targets, predictable D-pad movement, obvious focus states, comfortable spacing, and an expressive interface designed for the couch.
 
-The project is intentionally modular so the **YouTube Data API** handles public metadata/search while the playback layer can evolve independently.
+The project keeps **metadata**, **UI**, and the future **playback layer** separate so each part can evolve cleanly.
 
 <table>
 <tr>
@@ -34,7 +36,7 @@ The project is intentionally modular so the **YouTube Data API** handles public 
 - D-pad / remote-first navigation
 - Android TV launcher integration
 - Large cards and readable typography
-- Dedicated Home, Search, Subscriptions, History, Settings and About areas
+- Home, Search, Subscriptions, History, Settings and About
 - Android 8.0+ target
 
 </td>
@@ -47,7 +49,7 @@ The project is intentionally modular so the **YouTube Data API** handles public 
 - YouTube Data API v3
 - Coil thumbnail loading
 - Media3 / ExoPlayer foundation
-- Demo feed when no API key is configured
+- Demo feed without an API key
 
 </td>
 </tr>
@@ -55,66 +57,17 @@ The project is intentionally modular so the **YouTube Data API** handles public 
 
 ---
 
-## ✦ Material 3 Expressive direction
+## ✦ Expressive visual language
 
-PublivoreTube's visual language takes inspiration from the newer **Material 3 Expressive** direction: stronger shape contrast, playful geometry, clear hierarchy, and surfaces that make focus feel intentional.
+The UI direction uses a restrained Material 3-inspired shape system: **pills, rounded rectangles, circles, diamonds, soft asymmetric forms, and tonal surfaces**. The goal is expressive hierarchy without turning the TV interface into visual noise.
 
 <div align="center">
 
-| 🟣 **Pill** | 🟪 **Squircle** | ◆ **Diamond** | 🟢 **Circle** | 🔶 **Asymmetric form** |
+| Pill | Rounded container | Circle | Diamond | Soft asymmetric form |
 |:---:|:---:|:---:|:---:|:---:|
-| Navigation chips | App / content containers | Focus accents | Status & actions | Hero decoration |
+| Navigation | Content cards | Status | Focus accent | Hero decoration |
 
 </div>
-
-The README banner above uses the same visual vocabulary: **rounded containers, pill controls, diamonds, blobs, circles, strong tonal layers, and playful asymmetric shapes** against a dark TV-oriented surface.
-
----
-
-## ✦ Feature set
-
-<table>
-<tr>
-<td align="center" width="33%">
-
-### 📺 TV-native
-Leanback launcher support, 10-foot layouts, and predictable remote navigation.
-
-</td>
-<td align="center" width="33%">
-
-### 🔎 YouTube data
-Popular videos, search, thumbnails, durations, and public metadata through YouTube Data API v3.
-
-</td>
-<td align="center" width="33%">
-
-### 🎨 Expressive UI
-Large cards, focus states, tonal surfaces, rounded shapes, and a TV-first information hierarchy.
-
-</td>
-</tr>
-<tr>
-<td align="center">
-
-### 🧩 Modular
-Repository-based data access keeps UI, metadata, and playback responsibilities separated.
-
-</td>
-<td align="center">
-
-### 🛟 Demo fallback
-The app can still launch and showcase the UI without a configured API key.
-
-</td>
-<td align="center">
-
-### ⚙️ Media3 foundation
-Playback architecture is prepared for future native playback work.
-
-</td>
-</tr>
-</table>
 
 ---
 
@@ -126,7 +79,6 @@ Playback architecture is prepared for future native playback work.
 | Android 8.0+ | ✅ |
 | D-pad navigation | ✅ |
 | Material 3 for TV | ✅ |
-| Material 3 Expressive visual direction | 🚧 |
 | YouTube Data API metadata | ✅ |
 | YouTube search | ✅ |
 | Real thumbnails | ✅ |
@@ -142,8 +94,7 @@ Playback architecture is prepared for future native playback work.
 
 ```text
                  ┌───────────────────────────┐
-                 │     Compose / TV UI      │
-                 │  expressive TV surfaces  │
+                 │       Compose / TV UI   │
                  └─────────────┬─────────────┘
                                │
                                ▼
@@ -183,7 +134,7 @@ YOUTUBE_API_KEY=YOUR_API_KEY_HERE
 
 A `YOUTUBE_API_KEY` environment variable is also supported.
 
-Without a key, the app falls back to its built-in demo content.
+Without a key, the app falls back to built-in demo content.
 
 ### Playback note
 
@@ -241,21 +192,7 @@ local.properties
 *.keystore
 ```
 
-The repository contains only the configuration needed to read local signing values. The actual keystore and passwords remain on your machine / CI secrets.
-
----
-
-## ✦ Pac-Man corner 👾
-
-The repository includes a GitHub Actions workflow for generating a Pac-Man-style contribution graph.
-
-The generated graphic is published to the `output` branch so it can be embedded back into the README.
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Jackson4Rocks/PublivoreTube/output/pacman-contribution-graph-dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Jackson4Rocks/PublivoreTube/output/pacman-contribution-graph.svg">
-  <img alt="Pac-Man contribution graph" src="https://raw.githubusercontent.com/Jackson4Rocks/PublivoreTube/output/pacman-contribution-graph.svg" width="100%">
-</picture>
+The actual keystore and passwords stay on your machine / CI secrets.
 
 ---
 
@@ -268,7 +205,7 @@ The generated graphic is published to the `output` branch so it can be embedded 
 - [x] YouTube Data API metadata/search
 - [x] Real thumbnails
 - [x] About / maintainer page
-- [x] Custom app icon
+- [x] Custom official app icon
 - [x] CI APK artifacts
 
 ### 0.2 — Experience
@@ -297,7 +234,6 @@ The generated graphic is published to the `output` branch so it can be embedded 
 
 [![GitHub](https://img.shields.io/badge/GitHub-Jackson4Rocks-1D1B20?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Jackson4Rocks)
 
-Built in public.  
 **Build • Break • Improve • Repeat.**
 
 </div>

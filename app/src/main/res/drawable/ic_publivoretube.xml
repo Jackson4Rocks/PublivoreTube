@@ -4,26 +4,37 @@
         <shape android:shape="rectangle">
             <gradient
                 android:angle="315"
-                android:startColor="#05030B"
-                android:centerColor="#24104F"
-                android:endColor="#6F35D8" />
-            <corners android:radius="34dp" />
+                android:startColor="#1A1E2D"
+                android:centerColor="#0B0E18"
+                android:endColor="#080A12" />
+            <corners android:radius="28dp" />
+            <stroke
+                android:width="2dp"
+                android:color="#3C4662" />
         </shape>
     </item>
     <item
-        android:left="38dp"
-        android:top="38dp"
-        android:right="38dp"
-        android:bottom="38dp">
+        android:left="18dp"
+        android:top="18dp"
+        android:right="18dp"
+        android:bottom="18dp">
         <vector
-            android:width="116dp"
-            android:height="116dp"
-            android:viewportWidth="1000"
-            android:viewportHeight="1000">
+            android:width="92dp"
+            android:height="92dp"
+            android:viewportWidth="512"
+            android:viewportHeight="512">
             <path
-                android:fillColor="#F7F1FF"
-                android:fillType="evenOdd"
-                android:pathData="M180,850 L180,150 L520,150 C690,150 790,245 790,390 C790,535 690,630 520,630 L355,630 L355,850 Z M355,270 L355,510 L510,510 C590,510 635,465 635,390 C635,315 590,270 510,270 Z" />
+                android:fillColor="#FF2F65"
+                android:pathData="M203,188 C203,169 222,158 239,168 L363,241 C380,251 380,276 363,286 L239,359 C222,369 203,358 203,339 Z" />
+            <path
+                android:fillColor="#FFF8FC"
+                android:pathData="M226,166 L254,202 L270,191 L242,155 C235,146 223,154 226,166 Z" />
+            <path
+                android:fillColor="#FFF8FC"
+                android:pathData="M306,166 L278,202 L294,191 L322,155 C329,146 317,154 306,166 Z" />
+            <path
+                android:fillColor="#FF2F65"
+                android:pathData="M365,323 L348,323 L348,299 L372,299 L372,278 L397,278 L397,299 L416,299 L416,323 L397,323 L397,380 C397,396 405,402 420,402 L420,428 L400,428 C371,428 355,413 355,383 L355,323 Z" />
         </vector>
     </item>
 </layer-list>
