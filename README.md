@@ -1,86 +1,199 @@
-# PublivoreTube
+<div align="center">
 
-PublivoreTube is an experimental, open-source Android TV client focused on a polished 10-foot experience, D-pad navigation, modular content providers, and a future ad/sponsor-aware playback stack.
+# 📺 PublivoreTube
 
-## What is implemented
+### A polished, remote-first YouTube client for Android TV
 
-- Android TV / Leanback launcher support.
-- Android 8.0 (API 26) and newer.
-- Google TV Material 3 components through `androidx.tv:tv-material`.
-- Remote-first focus behavior with predictable D-pad navigation.
-- Dedicated Search, About, History, Settings, and Subscriptions destinations.
-- Generated PublivoreTube purple-gradient P app icon.
-- YouTube Data API v3 integration for:
-  - Most-popular video feed.
-  - YouTube video search.
-  - Video thumbnails.
-  - Video durations.
-- Demo-feed fallback when an API key is not configured.
-- Media3 / ExoPlayer foundation for the future native playback layer.
-- GitHub Actions debug APK builds with downloadable APK artifacts.
+[![Android Build](https://github.com/Jackson4Rocks/PublivoreTube/actions/workflows/android.yml/badge.svg)](https://github.com/Jackson4Rocks/PublivoreTube/actions/workflows/android.yml)
+[![Platform](https://img.shields.io/badge/platform-Android%20TV-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://developer.android.com/tv)
+[![Min SDK](https://img.shields.io/badge/Android-8.0%2B-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://developer.android.com/about/versions/oreo)
+[![License](https://img.shields.io/badge/license-MIT-8B5CF6?style=for-the-badge)](LICENSE)
 
-## YouTube Data API setup
+<br>
 
-PublivoreTube deliberately does **not** store a Google API key in the repository.
+```text
+     _            _   _  _         ____                      
+    | | ___  ___ |  | || |__     / ___|  ___  _ __  _   _ 
+ _  | |/ _ \/ _ \|  \| ||  _ \   \___ \ / _ \| '_ \| | | |
+| |_| |  __/ (_) | |\  || | | |   ___) | (_) | | | | |_| |
+ \___/ \___|\___/|_| \_||_| |_|  |____/ \___/|_| |_|\__, |
+                                                    |___/
 
-1. Create or select a Google Cloud project.
-2. Enable the **YouTube Data API v3**.
-3. Create an API key and restrict it appropriately for the application.
-4. In a local checkout, add this to `local.properties`:
+                    Jackson4Rocks
+                       Leon Sony
+```
+
+<br>
+
+**PublivoreTube** is an experimental open-source Android TV client built around a proper 10-foot interface: large content cards, predictable D-pad focus, Material 3 styling, and a clean separation between metadata and playback.
+
+</div>
+
+---
+
+## ✨ Highlights
+
+- 📺 **Android TV first** — Leanback launcher support and remote-friendly navigation.
+- 🎮 **D-pad focused UI** — predictable focus movement and visible focus states.
+- 🎨 **Material 3 for TV** — built with `androidx.tv:tv-material`.
+- 🔎 **YouTube Data API v3** — popular videos, search, thumbnails, durations, and metadata.
+- 🖼️ **Real thumbnails** — content cards use YouTube thumbnail URLs when available.
+- 🧪 **Demo fallback** — the UI still works without an API key.
+- ▶️ **Media3 foundation** — playback architecture is separated from metadata retrieval.
+- ⚡ **CI builds** — GitHub Actions produces downloadable Android APK artifacts.
+- 🔐 **Local credentials** — API keys and signing credentials stay out of the repository.
+
+## 🖥️ UI stack
+
+```text
+┌──────────────────────────────────────────────────────────┐
+│ PublivoreTube                                             │
+│                                                          │
+│  Home   Search   Subscriptions   History   Settings     │
+│                                                          │
+│  ┌────────────────────────────────────────────────────┐  │
+│  │                  Featured video                    │  │
+│  └────────────────────────────────────────────────────┘  │
+│                                                          │
+│  Recommended                                             │
+│  [ Thumbnail ] [ Thumbnail ] [ Thumbnail ] [ Thumbnail ]│
+│                                                          │
+│  Trending                                                │
+│  [ Thumbnail ] [ Thumbnail ] [ Thumbnail ] [ Thumbnail ]│
+└──────────────────────────────────────────────────────────┘
+```
+
+The app is designed for a TV remote rather than a touch-first phone layout.
+
+## 📦 Current features
+
+| Feature | Status |
+|---|:---:|
+| Android TV / Leanback launcher | ✅ |
+| Android 8.0+ | ✅ |
+| Material 3 for TV | ✅ |
+| D-pad navigation | ✅ |
+| Home / Search / Subscriptions / History / Settings / About | ✅ |
+| YouTube Data API metadata | ✅ |
+| YouTube search | ✅ |
+| Real thumbnails | ✅ |
+| Demo feed | ✅ |
+| Media3 / ExoPlayer foundation | ✅ |
+| Native in-app YouTube playback | 🚧 |
+
+## 🔑 YouTube Data API
+
+PublivoreTube does **not** commit a Google API key to GitHub.
+
+Create a local `local.properties` file:
 
 ```properties
 YOUTUBE_API_KEY=YOUR_API_KEY_HERE
 ```
 
-The Gradle build also accepts a `YOUTUBE_API_KEY` environment variable, which is useful for CI or private build machines.
+The Gradle build also accepts:
 
-Without a key, the app still launches and uses the built-in demo feed so the UI can be tested without credentials.
+```bash
+export YOUTUBE_API_KEY="YOUR_API_KEY_HERE"
+```
 
-## Important playback note
+Without a key, the app falls back to the built-in demo feed.
 
-The YouTube Data API provides metadata and search results; it does **not** provide a general-purpose direct video stream URL. PublivoreTube therefore keeps metadata retrieval separate from playback.
+### Important
 
-Selecting a video currently opens its normal YouTube URL as a compatibility fallback. The planned native Media3 playback layer will be developed separately rather than pretending the Data API itself provides playable media streams.
+The YouTube Data API provides video metadata and search results; it does not provide a general-purpose direct playback URL. PublivoreTube therefore keeps **metadata retrieval** separate from the **playback layer**.
 
-## Build
+For the current build, selecting a video opens its normal YouTube URL as a compatibility fallback.
 
-Open the project in Android Studio with JDK 17+ and sync Gradle.
+## 🛠️ Build locally
+
+Requirements:
+
+- JDK 17+
+- Android SDK
+- Android SDK Platform 36
+- Android Build Tools 36.0.0
+- Gradle 9.6.1 or the project's configured Gradle version
+
+Debug build:
 
 ```bash
 gradle :app:assembleDebug
 ```
 
-Install the resulting APK:
+Release build:
+
+```bash
+gradle :app:assembleRelease
+```
+
+Install a debug APK:
 
 ```bash
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
-## Project structure
+Release output:
 
 ```text
-UI / Compose for TV
-        │
-        ▼
-VideoRepository
-   ┌────┴───────────┐
-   ▼                ▼
-YouTube Data API   Demo fallback
-        │
-        ▼
-      Video
-        │
-        ▼
-Future Media3 playback layer
+app/build/outputs/apk/release/app-release.apk
 ```
 
-## Maintainer
+### 🔐 Release signing
 
-**Leon Sony** — project creator and maintainer.
+Keep these files local:
 
-GitHub: https://github.com/Jackson4Rocks
+```text
+local.properties
+*.jks
+*.keystore
+```
 
-## Roadmap
+The repository intentionally does not contain release passwords or signing keys.
+
+## 🏗️ Architecture
+
+```text
+                    ┌─────────────────────┐
+                    │  Compose for TV UI  │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │  VideoRepository    │
+                    └──────────┬──────────┘
+                           ┌───┴───┐
+                           ▼       ▼
+                  ┌────────────┐  ┌─────────────┐
+                  │ YouTube    │  │ Demo Feed   │
+                  │ Data API   │  │ Fallback    │
+                  └─────┬──────┘  └─────────────┘
+                        │
+                        ▼
+                  ┌─────────────┐
+                  │    Video    │
+                  └──────┬──────┘
+                         │
+                         ▼
+                  ┌─────────────┐
+                  │   Media3    │
+                  │  Playback   │
+                  └─────────────┘
+```
+
+## 👾 Pac-Man contribution graph
+
+The repository also generates a Pac-Man version of the GitHub contribution grid with GitHub Actions. The generated SVG is published to the `output` branch and embedded below.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Jackson4Rocks/PublivoreTube/output/pacman-contribution-graph-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Jackson4Rocks/PublivoreTube/output/pacman-contribution-graph.svg">
+  <img alt="Pac-Man contribution graph" src="https://raw.githubusercontent.com/Jackson4Rocks/PublivoreTube/output/pacman-contribution-graph.svg">
+</picture>
+
+Generated with [abozanona/pacman-contribution-graph](https://github.com/abozanona/pacman-contribution-graph).
+
+## 🚀 Roadmap
 
 ### v0.1.x
 - [x] Android TV shell
@@ -94,7 +207,7 @@ GitHub: https://github.com/Jackson4Rocks
 ### v0.2
 - [ ] Native in-app player
 - [ ] Video details page
-- [ ] Watch history
+- [ ] Persistent watch history
 - [ ] Persistent settings
 - [ ] Channel pages
 - [ ] Better search filters
@@ -105,6 +218,21 @@ GitHub: https://github.com/Jackson4Rocks
 - [ ] Improved playback controls
 - [ ] Account-aware features
 
-## License
+## 👤 Maintainer
+
+**Leon Sony**  
+Project creator and maintainer.
+
+GitHub: **[@Jackson4Rocks](https://github.com/Jackson4Rocks)**
+
+## 📄 License
 
 MIT — see [LICENSE](LICENSE).
+
+---
+
+<div align="center">
+
+**Built for the couch. Powered by open source.** 📺💜
+
+</div>
