@@ -27,6 +27,10 @@ The repository currently contains:
 
 The YouTube content provider and playback implementation are intentionally not part of this first scaffold.
 
+### Platform support
+
+PublivoreTube targets Android TV devices running **Android 8.0 (API 26) or newer**.
+
 ## Build
 
 Open the project in Android Studio with JDK 17+ and sync the Gradle project.
