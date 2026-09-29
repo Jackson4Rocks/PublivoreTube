@@ -1,133 +1,221 @@
 <div align="center">
 
-# 📺 PublivoreTube
+<img src="https://raw.githubusercontent.com/Jackson4Rocks/PublivoreTube/main/docs/assets/material3-expressive-banner.svg" alt="PublivoreTube Material 3 Expressive banner" width="100%"/>
 
-### A polished, remote-first YouTube client for Android TV
+### 📺 YouTube, reimagined for your TV.
+
+A polished, open-source Android TV client focused on **remote-first navigation**, **Material 3 Expressive-inspired UI**, and a clean separation between **content metadata** and **playback**.
 
 [![Android Build](https://github.com/Jackson4Rocks/PublivoreTube/actions/workflows/android.yml/badge.svg)](https://github.com/Jackson4Rocks/PublivoreTube/actions/workflows/android.yml)
-[![Platform](https://img.shields.io/badge/platform-Android%20TV-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://developer.android.com/tv)
-[![Min SDK](https://img.shields.io/badge/Android-8.0%2B-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://developer.android.com/about/versions/oreo)
-[![License](https://img.shields.io/badge/license-MIT-8B5CF6?style=for-the-badge)](LICENSE)
-
-<br>
-
-```text
-     _            _   _  _         ____                      
-    | | ___  ___ |  | || |__     / ___|  ___  _ __  _   _ 
- _  | |/ _ \/ _ \|  \| ||  _ \   \___ \ / _ \| '_ \| | | |
-| |_| |  __/ (_) | |\  || | | |   ___) | (_) | | | | |_| |
- \___/ \___|\___/|_| \_||_| |_|  |____/ \___/|_| |_|\__, |
-                                                    |___/
-
-                    Jackson4Rocks
-                       Leon Sony
-```
-
-<br>
-
-**PublivoreTube** is an experimental open-source Android TV client built around a proper 10-foot interface: large content cards, predictable D-pad focus, Material 3 styling, and a clean separation between metadata and playback.
+[![Android TV](https://img.shields.io/badge/Android%20TV-8.0%2B-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://developer.android.com/tv)
+[![Kotlin](https://img.shields.io/badge/Kotlin-Compose-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)](https://kotlinlang.org/)
+[![License](https://img.shields.io/badge/MIT-License-4F378B?style=for-the-badge)](LICENSE)
 
 </div>
 
 ---
 
-## ✨ Highlights
+## ✦ What is PublivoreTube?
 
-- 📺 **Android TV first** — Leanback launcher support and remote-friendly navigation.
-- 🎮 **D-pad focused UI** — predictable focus movement and visible focus states.
-- 🎨 **Material 3 for TV** — built with `androidx.tv:tv-material`.
-- 🔎 **YouTube Data API v3** — popular videos, search, thumbnails, durations, and metadata.
-- 🖼️ **Real thumbnails** — content cards use YouTube thumbnail URLs when available.
-- 🧪 **Demo fallback** — the UI still works without an API key.
-- ▶️ **Media3 foundation** — playback architecture is separated from metadata retrieval.
-- ⚡ **CI builds** — GitHub Actions produces downloadable Android APK artifacts.
-- 🔐 **Local credentials** — API keys and signing credentials stay out of the repository.
+PublivoreTube is my Android TV client project built around one idea:
 
-## 🖥️ UI stack
+> **The TV experience should feel like a TV experience.**
 
-```text
-┌──────────────────────────────────────────────────────────┐
-│ PublivoreTube                                             │
-│                                                          │
-│  Home   Search   Subscriptions   History   Settings     │
-│                                                          │
-│  ┌────────────────────────────────────────────────────┐  │
-│  │                  Featured video                    │  │
-│  └────────────────────────────────────────────────────┘  │
-│                                                          │
-│  Recommended                                             │
-│  [ Thumbnail ] [ Thumbnail ] [ Thumbnail ] [ Thumbnail ]│
-│                                                          │
-│  Trending                                                │
-│  [ Thumbnail ] [ Thumbnail ] [ Thumbnail ] [ Thumbnail ]│
-└──────────────────────────────────────────────────────────┘
-```
+That means big visual targets, predictable D-pad movement, obvious focus states, comfortable spacing, and a UI that feels expressive without becoming noisy.
 
-The app is designed for a TV remote rather than a touch-first phone layout.
+The project is intentionally modular so the **YouTube Data API** handles public metadata/search while the playback layer can evolve independently.
 
-## 📦 Current features
+<table>
+<tr>
+<td width="50%">
 
-| Feature | Status |
+### ◈ Built for the couch
+
+- D-pad / remote-first navigation
+- Android TV launcher integration
+- Large cards and readable typography
+- Dedicated Home, Search, Subscriptions, History, Settings and About areas
+- Android 8.0+ target
+
+</td>
+<td width="50%">
+
+### ◆ Built to experiment
+
+- Jetpack Compose
+- Compose for TV / Material 3 for TV
+- YouTube Data API v3
+- Coil thumbnail loading
+- Media3 / ExoPlayer foundation
+- Demo feed when no API key is configured
+
+</td>
+</tr>
+</table>
+
+---
+
+## ✦ Material 3 Expressive direction
+
+PublivoreTube's visual language takes inspiration from the newer **Material 3 Expressive** direction: stronger shape contrast, playful geometry, clear hierarchy, and surfaces that make focus feel intentional.
+
+<div align="center">
+
+| 🟣 **Pill** | 🟪 **Squircle** | ◆ **Diamond** | 🟢 **Circle** | 🔶 **Asymmetric form** |
+|:---:|:---:|:---:|:---:|:---:|
+| Navigation chips | App / content containers | Focus accents | Status & actions | Hero decoration |
+
+</div>
+
+The README banner above uses the same visual vocabulary: **rounded containers, pill controls, diamonds, blobs, circles, strong tonal layers, and playful asymmetric shapes** against a dark TV-oriented surface.
+
+---
+
+## ✦ Feature set
+
+<table>
+<tr>
+<td align="center" width="33%">
+
+### 📺 TV-native
+Leanback launcher support, 10-foot layouts, and predictable remote navigation.
+
+</td>
+<td align="center" width="33%">
+
+### 🔎 YouTube data
+Popular videos, search, thumbnails, durations, and public metadata through YouTube Data API v3.
+
+</td>
+<td align="center" width="33%">
+
+### 🎨 Expressive UI
+Large cards, focus states, tonal surfaces, rounded shapes, and a TV-first information hierarchy.
+
+</td>
+</tr>
+<tr>
+<td align="center">
+
+### 🧩 Modular
+Repository-based data access keeps UI, metadata, and playback responsibilities separated.
+
+</td>
+<td align="center">
+
+### 🛟 Demo fallback
+The app can still launch and showcase the UI without a configured API key.
+
+</td>
+<td align="center">
+
+### ⚙️ Media3 foundation
+Playback architecture is prepared for future native playback work.
+
+</td>
+</tr>
+</table>
+
+---
+
+## ✦ Current state
+
+| Area | Status |
 |---|:---:|
 | Android TV / Leanback launcher | ✅ |
 | Android 8.0+ | ✅ |
-| Material 3 for TV | ✅ |
 | D-pad navigation | ✅ |
-| Home / Search / Subscriptions / History / Settings / About | ✅ |
+| Material 3 for TV | ✅ |
+| Material 3 Expressive visual direction | 🚧 |
 | YouTube Data API metadata | ✅ |
 | YouTube search | ✅ |
 | Real thumbnails | ✅ |
 | Demo feed | ✅ |
 | Media3 / ExoPlayer foundation | ✅ |
-| Native in-app YouTube playback | 🚧 |
+| Native in-app video playback | 🚧 |
+| Persistent history | 🚧 |
+| Persistent settings | 🚧 |
 
-## 🔑 YouTube Data API
+---
 
-PublivoreTube does **not** commit a Google API key to GitHub.
+## ✦ Architecture
 
-Create a local `local.properties` file:
+```text
+                 ┌───────────────────────────┐
+                 │     Compose / TV UI      │
+                 │  expressive TV surfaces  │
+                 └─────────────┬─────────────┘
+                               │
+                               ▼
+                 ┌───────────────────────────┐
+                 │      VideoRepository     │
+                 └─────────────┬─────────────┘
+                         ┌─────┴─────┐
+                         ▼           ▼
+                ┌──────────────┐  ┌─────────────┐
+                │ YouTube API  │  │ Demo Feed   │
+                │   v3         │  │  fallback   │
+                └──────┬───────┘  └─────────────┘
+                       │
+                       ▼
+                ┌──────────────┐
+                │    Video     │
+                └──────┬───────┘
+                       │
+                       ▼
+                ┌──────────────┐
+                │    Media3    │
+                │   playback   │
+                └──────────────┘
+```
+
+---
+
+## ✦ YouTube Data API
+
+PublivoreTube **does not commit API credentials** to the repository.
+
+Create a local `local.properties`:
 
 ```properties
 YOUTUBE_API_KEY=YOUR_API_KEY_HERE
 ```
 
-The Gradle build also accepts:
+A `YOUTUBE_API_KEY` environment variable is also supported.
 
-```bash
-export YOUTUBE_API_KEY="YOUR_API_KEY_HERE"
-```
+Without a key, the app falls back to its built-in demo content.
 
-Without a key, the app falls back to the built-in demo feed.
+### Playback note
 
-### Important
+The YouTube Data API provides **metadata and search results**, not a general-purpose direct media stream URL.
 
-The YouTube Data API provides video metadata and search results; it does not provide a general-purpose direct playback URL. PublivoreTube therefore keeps **metadata retrieval** separate from the **playback layer**.
+For the current implementation, selecting a video opens its normal YouTube URL as a compatibility fallback. Native in-app playback remains a separate development track.
 
-For the current build, selecting a video opens its normal YouTube URL as a compatibility fallback.
+---
 
-## 🛠️ Build locally
+## ✦ Build
 
-Requirements:
+### Requirements
 
 - JDK 17+
 - Android SDK
 - Android SDK Platform 36
 - Android Build Tools 36.0.0
-- Gradle 9.6.1 or the project's configured Gradle version
+- A Gradle version compatible with the project
 
-Debug build:
+### Debug
 
 ```bash
 gradle :app:assembleDebug
 ```
 
-Release build:
+### Release
 
 ```bash
 gradle :app:assembleRelease
 ```
 
-Install a debug APK:
+### Install over ADB
 
 ```bash
 adb install -r app/build/outputs/apk/debug/app-debug.apk
@@ -139,9 +227,13 @@ Release output:
 app/build/outputs/apk/release/app-release.apk
 ```
 
-### 🔐 Release signing
+---
 
-Keep these files local:
+## ✦ Release signing
+
+The release build uses a local signing keystore.
+
+Keep these **out of GitHub**:
 
 ```text
 local.properties
@@ -149,90 +241,73 @@ local.properties
 *.keystore
 ```
 
-The repository intentionally does not contain release passwords or signing keys.
+The repository contains only the configuration needed to read local signing values. The actual keystore and passwords remain on your machine / CI secrets.
 
-## 🏗️ Architecture
+---
 
-```text
-                    ┌─────────────────────┐
-                    │  Compose for TV UI  │
-                    └──────────┬──────────┘
-                               │
-                               ▼
-                    ┌─────────────────────┐
-                    │  VideoRepository    │
-                    └──────────┬──────────┘
-                           ┌───┴───┐
-                           ▼       ▼
-                  ┌────────────┐  ┌─────────────┐
-                  │ YouTube    │  │ Demo Feed   │
-                  │ Data API   │  │ Fallback    │
-                  └─────┬──────┘  └─────────────┘
-                        │
-                        ▼
-                  ┌─────────────┐
-                  │    Video    │
-                  └──────┬──────┘
-                         │
-                         ▼
-                  ┌─────────────┐
-                  │   Media3    │
-                  │  Playback   │
-                  └─────────────┘
-```
+## ✦ Pac-Man corner 👾
 
-## 👾 Pac-Man contribution graph
+The repository includes a GitHub Actions workflow for generating a Pac-Man-style contribution graph.
 
-The repository also generates a Pac-Man version of the GitHub contribution grid with GitHub Actions. The generated SVG is published to the `output` branch and embedded below.
+The generated graphic is published to the `output` branch so it can be embedded back into the README.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Jackson4Rocks/PublivoreTube/output/pacman-contribution-graph-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Jackson4Rocks/PublivoreTube/output/pacman-contribution-graph.svg">
-  <img alt="Pac-Man contribution graph" src="https://raw.githubusercontent.com/Jackson4Rocks/PublivoreTube/output/pacman-contribution-graph.svg">
+  <img alt="Pac-Man contribution graph" src="https://raw.githubusercontent.com/Jackson4Rocks/PublivoreTube/output/pacman-contribution-graph.svg" width="100%">
 </picture>
 
-Generated with [abozanona/pacman-contribution-graph](https://github.com/abozanona/pacman-contribution-graph).
+---
 
-## 🚀 Roadmap
+## ✦ Roadmap
 
-### v0.1.x
+### 0.1.x — Foundation
 - [x] Android TV shell
-- [x] Remote-first Material 3 UI
+- [x] Remote-first UI
+- [x] Material 3 TV components
 - [x] YouTube Data API metadata/search
-- [x] Real YouTube thumbnails
+- [x] Real thumbnails
 - [x] About / maintainer page
-- [x] Custom PublivoreTube icon
-- [x] CI APK artifact
+- [x] Custom app icon
+- [x] CI APK artifacts
 
-### v0.2
+### 0.2 — Experience
 - [ ] Native in-app player
-- [ ] Video details page
-- [ ] Persistent watch history
+- [ ] Video details screen
+- [ ] Persistent history
 - [ ] Persistent settings
 - [ ] Channel pages
-- [ ] Better search filters
+- [ ] Search filters
 
-### v0.3
-- [ ] Sponsor/segment handling
+### 0.3 — Power features
+- [ ] Playback controls
+- [ ] Sponsor / segment handling
 - [ ] Playback filtering
-- [ ] Improved playback controls
 - [ ] Account-aware features
 
-## 👤 Maintainer
+---
 
-**Leon Sony**  
-Project creator and maintainer.
+## ✦ Maintainer
 
-GitHub: **[@Jackson4Rocks](https://github.com/Jackson4Rocks)**
+<div align="center">
 
-## 📄 License
+### Leon Sony
 
-MIT — see [LICENSE](LICENSE).
+**Project creator & maintainer**
+
+[![GitHub](https://img.shields.io/badge/GitHub-Jackson4Rocks-1D1B20?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Jackson4Rocks)
+
+Built in public.  
+**Build • Break • Improve • Repeat.**
+
+</div>
 
 ---
 
 <div align="center">
 
-**Built for the couch. Powered by open source.** 📺💜
+### 💜 PublivoreTube
+
+**Open source. TV-first. Still evolving.**
 
 </div>
