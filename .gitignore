@@ -8,3 +8,8 @@ build/
 captures/
 .externalNativeBuild/
 .cxx/
+publivoretube-release.jks
+
+# Android signing keys
+*.jks
+*.keystore
