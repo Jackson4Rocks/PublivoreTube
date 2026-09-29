@@ -102,6 +102,7 @@ fun HomeScreen(
                     else -> HomeContent(
                         videos = videos,
                         onVideoSelected = onVideoSelected,
+                        onSearch = { selectedNav = 1 },
                     )
                 }
             }
@@ -113,6 +114,7 @@ fun HomeScreen(
 private fun HomeContent(
     videos: List<Video>,
     onVideoSelected: (Video) -> Unit,
+    onSearch: () -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -124,7 +126,7 @@ private fun HomeContent(
         ),
         verticalArrangement = Arrangement.spacedBy(34.dp),
     ) {
-        item { TopBar() }
+        item { TopBar(onSearch = onSearch) }
 
         item {
             HeroBanner(
@@ -400,6 +402,17 @@ private fun RailDestination(
             .height(74.dp)
             .then(
                 focusRequester?.let { Modifier.focusRequester(it) } ?: Modifier,
+            )
+            .then(
+                if (selected) {
+                    Modifier.border(
+                        width = 2.dp,
+                        color = AccentStrong,
+                        shape = RoundedCornerShape(22.dp),
+                    )
+                } else {
+                    Modifier
+                },
             ),
         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp),
     ) {
@@ -420,7 +433,9 @@ private fun RailDestination(
 }
 
 @Composable
-private fun TopBar() {
+private fun TopBar(
+    onSearch: () -> Unit,
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(14.dp),
@@ -434,12 +449,8 @@ private fun TopBar() {
 
         Spacer(modifier = Modifier.weight(1f))
 
-        Button(onClick = { }) {
+        Button(onClick = onSearch) {
             Text("Search")
-        }
-
-        Button(onClick = { }) {
-            Text("Sign in")
         }
     }
 }
@@ -492,13 +503,8 @@ private fun HeroBanner(
                     color = TextMuted,
                 )
 
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Button(onClick = onClick) {
-                        Text("Play")
-                    }
-                    Button(onClick = { }) {
-                        Text("More info")
-                    }
+                Button(onClick = onClick) {
+                    Text("Play")
                 }
             }
         }
