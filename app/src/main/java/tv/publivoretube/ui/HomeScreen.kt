@@ -74,12 +74,18 @@ fun HomeScreen(
                 onSelected = { selectedNav = it },
             )
 
-            when (selectedNav) {
-                5 -> AboutScreen()
-                else -> HomeContent(
-                    videos = videos,
-                    onVideoSelected = onVideoSelected,
-                )
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+            ) {
+                when (selectedNav) {
+                    5 -> AboutScreen()
+                    else -> HomeContent(
+                        videos = videos,
+                        onVideoSelected = onVideoSelected,
+                    )
+                }
             }
         }
     }
@@ -91,9 +97,7 @@ private fun HomeContent(
     onVideoSelected: (Video) -> Unit,
 ) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxHeight()
-            .weight(1f),
+        modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(
             start = 38.dp,
             end = 54.dp,
@@ -142,9 +146,7 @@ private fun AboutScreen() {
     val context = LocalContext.current
 
     LazyColumn(
-        modifier = Modifier
-            .fillMaxHeight()
-            .weight(1f),
+        modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(
             start = 48.dp,
             end = 72.dp,
