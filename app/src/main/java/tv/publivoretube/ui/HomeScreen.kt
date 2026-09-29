@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -46,12 +47,10 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import androidx.tv.material3.Button
 import androidx.tv.material3.Card
-import androidx.tv.material3.CircularProgressIndicator
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Surface
 import androidx.tv.material3.SurfaceDefaults
 import androidx.tv.material3.Text
-import androidx.tv.material3.TextField
 import tv.publivoretube.R
 import tv.publivoretube.data.Video
 
@@ -294,7 +293,11 @@ private fun LoadingSection() {
             .height(420.dp),
         contentAlignment = Alignment.Center,
     ) {
-        CircularProgressIndicator()
+        Text(
+            text = "Loading YouTube…",
+            style = MaterialTheme.typography.titleMedium,
+            color = TextMuted,
+        )
     }
 }
 
@@ -540,15 +543,53 @@ private fun SearchScreen(
             horizontalArrangement = Arrangement.spacedBy(14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            TextField(
-                value = query,
-                onValueChange = onQueryChange,
+            Surface(
                 modifier = Modifier
                     .weight(1f)
+                    .height(68.dp)
                     .focusRequester(focusRequester),
-                label = { Text("Search") },
-                singleLine = true,
-            )
+                shape = RoundedCornerShape(18.dp),
+                colors = SurfaceDefaults.colors(containerColor = CardSurface),
+            ) {
+                BasicTextField(
+                    value = query,
+                    onValueChange = onQueryChange,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 18.dp, vertical = 11.dp),
+                    singleLine = true,
+                    textStyle = MaterialTheme.typography.bodyLarge.copy(
+                        color = Color.White,
+                    ),
+                    decorationBox = { innerTextField ->
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                        ) {
+                            Text(
+                                text = "Search YouTube",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = AccentStrong,
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(28.dp),
+                                contentAlignment = Alignment.CenterStart,
+                            ) {
+                                if (query.isBlank()) {
+                                    Text(
+                                        text = "Type with your remote keyboard…",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = TextMuted,
+                                    )
+                                }
+                                innerTextField()
+                            }
+                        }
+                    },
+                )
+            }
 
             Button(
                 onClick = { onSearch(query) },
@@ -562,7 +603,11 @@ private fun SearchScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
             ) {
-                CircularProgressIndicator()
+                Text(
+                    text = "Searching…",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = TextMuted,
+                )
             }
         } else if (results.isEmpty()) {
             Box(
