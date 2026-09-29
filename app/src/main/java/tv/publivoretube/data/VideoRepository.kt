@@ -3,9 +3,28 @@ package tv.publivoretube.data
 interface VideoRepository {
     suspend fun home(): List<Video>
     suspend fun search(query: String): List<Video>
+    val isRemoteConfigured: Boolean
+}
+
+class YoutubeVideoRepository(
+    private val api: YoutubeDataApi,
+    private val fallback: DemoVideoRepository = DemoVideoRepository(),
+) : VideoRepository {
+    override val isRemoteConfigured: Boolean
+        get() = api.isConfigured
+
+    override suspend fun home(): List<Video> =
+        runCatching { api.mostPopular() }
+            .getOrElse { fallback.homeStatic() }
+
+    override suspend fun search(query: String): List<Video> =
+        runCatching { api.search(query) }
+            .getOrElse { fallback.search(query) }
 }
 
 class DemoVideoRepository : VideoRepository {
+    override val isRemoteConfigured: Boolean = false
+
     override suspend fun home(): List<Video> = homeStatic()
 
     override suspend fun search(query: String): List<Video> = homeStatic().filter {
