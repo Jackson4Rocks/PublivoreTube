@@ -1,95 +1,109 @@
 # PublivoreTube
 
-PublivoreTube is an experimental, open-source Android TV client project focused on a clean, remote-first viewing experience and modular playback/content providers.
+PublivoreTube is an experimental, open-source Android TV client focused on a polished 10-foot experience, D-pad navigation, modular content providers, and a future ad/sponsor-aware playback stack.
 
-## Project goals
+## What is implemented
 
-- First-class Android TV / 10-foot UI.
-- D-pad and remote friendly navigation.
-- Modular video metadata and playback providers.
-- Media3-based playback.
-- Optional ad/sponsor avoidance features implemented as separate modules.
-- Local settings and privacy controls.
-- No bundled Google/YouTube proprietary assets.
+- Android TV / Leanback launcher support.
+- Android 8.0 (API 26) and newer.
+- Google TV Material 3 components through `androidx.tv:tv-material`.
+- Remote-first focus behavior with predictable D-pad navigation.
+- Dedicated Search, About, History, Settings, and Subscriptions destinations.
+- Generated PublivoreTube purple-gradient P app icon.
+- YouTube Data API v3 integration for:
+  - Most-popular video feed.
+  - YouTube video search.
+  - Video thumbnails.
+  - Video durations.
+- Demo-feed fallback when an API key is not configured.
+- Media3 / ExoPlayer foundation for the future native playback layer.
+- GitHub Actions debug APK builds with downloadable APK artifacts.
 
-## Current status
+## YouTube Data API setup
 
-**v0.1.0 — foundation**
+PublivoreTube deliberately does **not** store a Google API key in the repository.
 
-The repository currently contains:
+1. Create or select a Google Cloud project.
+2. Enable the **YouTube Data API v3**.
+3. Create an API key and restrict it appropriately for the application.
+4. In a local checkout, add this to `local.properties`:
 
-- Android TV application shell.
-- Jetpack Compose for TV UI.
-- Demo home feed.
-- Media3 / ExoPlayer playback foundation.
-- Repository and player abstractions for future providers.
-- GitHub Actions build workflow.
+```properties
+YOUTUBE_API_KEY=YOUR_API_KEY_HERE
+```
 
-The YouTube content provider and playback implementation are intentionally not part of this first scaffold.
+The Gradle build also accepts a `YOUTUBE_API_KEY` environment variable, which is useful for CI or private build machines.
 
-### Platform support
+Without a key, the app still launches and uses the built-in demo feed so the UI can be tested without credentials.
 
-PublivoreTube targets Android TV devices running **Android 8.0 (API 26) or newer**.
+## Important playback note
+
+The YouTube Data API provides metadata and search results; it does **not** provide a general-purpose direct video stream URL. PublivoreTube therefore keeps metadata retrieval separate from playback.
+
+Selecting a video currently opens its normal YouTube URL as a compatibility fallback. The planned native Media3 playback layer will be developed separately rather than pretending the Data API itself provides playable media streams.
 
 ## Build
 
-Open the project in Android Studio with JDK 17+ and sync the Gradle project.
-
-For a machine with a compatible Gradle installation:
+Open the project in Android Studio with JDK 17+ and sync Gradle.
 
 ```bash
 gradle :app:assembleDebug
 ```
 
-Install the resulting APK on an Android TV device/emulator with:
+Install the resulting APK:
 
 ```bash
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
-## Architecture
+## Project structure
 
 ```text
-UI (Compose for TV)
+UI / Compose for TV
         │
         ▼
-Presentation / State
+VideoRepository
+   ┌────┴───────────┐
+   ▼                ▼
+YouTube Data API   Demo fallback
         │
-   ┌────┴────┐
-   ▼         ▼
-Content     Player
-Provider    Manager
-   │         │
-   ▼         ▼
-Metadata    Media3
+        ▼
+      Video
+        │
+        ▼
+Future Media3 playback layer
 ```
+
+## Maintainer
+
+**Leon Sony** — project creator and maintainer.
+
+GitHub: https://github.com/Jackson4Rocks
 
 ## Roadmap
 
-### 0.1
+### v0.1.x
 - [x] Android TV shell
-- [x] D-pad friendly home UI
-- [x] Media3 dependency
-- [x] Repository abstraction
-- [ ] Real thumbnail rendering
-- [ ] Player screen
+- [x] Remote-first Material 3 UI
+- [x] YouTube Data API metadata/search
+- [x] Real YouTube thumbnails
+- [x] About / maintainer page
+- [x] Custom PublivoreTube icon
+- [x] CI APK artifact
 
-### 0.2
-- [ ] Search UI
-- [ ] Channel pages
+### v0.2
+- [ ] Native in-app player
+- [ ] Video details page
 - [ ] Watch history
-- [ ] Settings
-- [ ] Real content provider
+- [ ] Persistent settings
+- [ ] Channel pages
+- [ ] Better search filters
 
-### 0.3
-- [ ] Sponsor/segment skipping module
-- [ ] Playback filtering module
-- [ ] Better player controls
-- [ ] Persistent preferences
-
-## Development principles
-
-PublivoreTube should keep content retrieval, playback, filtering, and UI independent so individual components can be replaced without rewriting the application.
+### v0.3
+- [ ] Sponsor/segment handling
+- [ ] Playback filtering
+- [ ] Improved playback controls
+- [ ] Account-aware features
 
 ## License
 
