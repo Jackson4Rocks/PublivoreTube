@@ -50,13 +50,14 @@ private val TextMuted = Color(0xFFB9BBC5)
 
 @Composable
 fun HomeScreen(
+    modifier: Modifier = Modifier,
     videos: List<Video>,
     onVideoSelected: (Video) -> Unit,
 ) {
     var selectedNav by remember { mutableIntStateOf(0) }
 
     Surface(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         color = Canvas,
     ) {
         Row(
