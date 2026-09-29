@@ -1,37 +1,96 @@
 package tv.publivoretube
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.ui.Modifier
-import tv.publivoretube.data.DemoVideoRepository
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import tv.publivoretube.data.Video
+import tv.publivoretube.data.VideoRepository
+import tv.publivoretube.data.YoutubeDataApi
+import tv.publivoretube.data.YoutubeVideoRepository
 import tv.publivoretube.ui.HomeScreen
 import tv.publivoretube.ui.theme.PublivoreTubeTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
-    private val repository = DemoVideoRepository()
+    private val repository: VideoRepository by lazy {
+        YoutubeVideoRepository(YoutubeDataApi(BuildConfig.YOUTUBE_API_KEY))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
             PublivoreTubeTheme {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    HomeScreen(
-                        videos = repository.homeStatic(),
-                        onVideoSelected = { video ->
-                            Toast.makeText(
-                                this@MainActivity,
-                                "Selected: ${video.title}",
-                                Toast.LENGTH_SHORT,
-                            ).show()
-                        },
-                    )
-                }
+                PublivoreTubeApp(
+                    repository = repository,
+                    onVideoSelected = ::openYouTube,
+                )
             }
         }
     }
+
+    private fun openYouTube(video: Video) {
+        val url = video.youtubeUrl ?: return
+        startActivity(
+            Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+        )
+    }
+}
+
+@Composable
+private fun PublivoreTubeApp(
+    repository: VideoRepository,
+    onVideoSelected: (Video) -> Unit,
+) {
+    var homeVideos by remember { mutableStateOf(emptyList<Video>()) }
+    var searchResults by remember { mutableStateOf(emptyList<Video>()) }
+    var homeLoading by remember { mutableStateOf(true) }
+    var searchLoading by remember { mutableStateOf(false) }
+    var searchQuery by remember { mutableStateOf("") }
+    var statusMessage by remember { mutableStateOf<String?>(null) }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(repository) {
+        homeLoading = true
+        homeVideos = repository.home()
+        homeLoading = false
+        if (!repository.isRemoteConfigured) {
+            statusMessage = "Demo feed active — add YOUTUBE_API_KEY for live YouTube data."
+        } else {
+            statusMessage = null
+        }
+    }
+
+    HomeScreen(
+        videos = homeVideos,
+        searchResults = searchResults,
+        searchQuery = searchQuery,
+        homeLoading = homeLoading,
+        searchLoading = searchLoading,
+        statusMessage = statusMessage,
+        onSearchQueryChange = { searchQuery = it },
+        onSearch = { query ->
+            searchQuery = query.trim()
+            if (searchQuery.isBlank()) {
+                searchResults = emptyList()
+                return@HomeScreen
+            }
+            scope.launch {
+                searchLoading = true
+                searchResults = repository.search(searchQuery)
+                searchLoading = false
+            }
+        },
+        onVideoSelected = onVideoSelected,
+    )
 }
