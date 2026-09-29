@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "tv.publivoretube"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "tv.publivoretube"
