@@ -2,7 +2,6 @@ package tv.publivoretube.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +23,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +31,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -80,6 +82,22 @@ fun HomeScreen(
                     .fillMaxHeight(),
             ) {
                 when (selectedNav) {
+                    1 -> PlaceholderScreen(
+                        title = "Search",
+                        body = "Search will be available here in the next release.",
+                    )
+                    2 -> PlaceholderScreen(
+                        title = "Subscriptions",
+                        body = "Your subscribed channels will appear here.",
+                    )
+                    3 -> PlaceholderScreen(
+                        title = "History",
+                        body = "Your watch history will appear here.",
+                    )
+                    4 -> PlaceholderScreen(
+                        title = "Settings",
+                        body = "Playback, appearance, privacy, and TV settings will appear here.",
+                    )
                     5 -> AboutScreen()
                     else -> HomeContent(
                         videos = videos,
@@ -136,6 +154,33 @@ private fun HomeContent(
                 title = "Continue watching",
                 videos = videos.drop(1) + videos.take(1),
                 onVideoSelected = onVideoSelected,
+            )
+        }
+    }
+}
+
+@Composable
+private fun PlaceholderScreen(
+    title: String,
+    body: String,
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.displaySmall,
+                color = Color.White,
+            )
+            Text(
+                text = body,
+                style = MaterialTheme.typography.bodyLarge,
+                color = TextMuted,
             )
         }
     }
@@ -234,9 +279,12 @@ private fun MaintainerCard(
     bio: String,
     onGithub: () -> Unit,
 ) {
-    Card(
-        onClick = { },
+    Surface(
         modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        colors = SurfaceDefaults.colors(
+            containerColor = CanvasElevated,
+        ),
     ) {
         Row(
             modifier = Modifier
@@ -290,6 +338,12 @@ private fun NavigationRail(
     selected: Int,
     onSelected: (Int) -> Unit,
 ) {
+    val homeFocusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) {
+        homeFocusRequester.requestFocus()
+    }
+
     val destinations = listOf(
         "⌂" to "Home",
         "⌕" to "Search",
@@ -323,6 +377,7 @@ private fun NavigationRail(
                     icon = icon,
                     label = label,
                     selected = selected == index,
+                    focusRequester = if (index == 0) homeFocusRequester else null,
                     onClick = { onSelected(index) },
                 )
             }
@@ -335,13 +390,17 @@ private fun RailDestination(
     icon: String,
     label: String,
     selected: Boolean,
+    focusRequester: FocusRequester?,
     onClick: () -> Unit,
 ) {
     Button(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .height(74.dp),
+            .height(74.dp)
+            .then(
+                focusRequester?.let { Modifier.focusRequester(it) } ?: Modifier,
+            ),
         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp),
     ) {
         Column(
@@ -526,8 +585,7 @@ private fun VideoCard(
                                 Color(0xFF2C3040),
                             ),
                         ),
-                    )
-                    .focusable(),
+                    ),
                 contentAlignment = Alignment.BottomEnd,
             ) {
                 Box(
