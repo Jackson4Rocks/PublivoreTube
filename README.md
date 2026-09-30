@@ -10,7 +10,7 @@ A modern, open-source **Android TV video app** made for the couch — big visual
 
 [![Android Build](https://github.com/Jackson4Rocks/PublivoreTube/actions/workflows/android.yml/badge.svg)](https://github.com/Jackson4Rocks/PublivoreTube/actions/workflows/android.yml)
 [![Android TV](https://img.shields.io/badge/Android%20TV-8.0%2B-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://developer.android.com/tv)
-[![License](https://img.shields.io/badge/License-MIT-4F378B?style=for-the-badge)](LICENSE)
+[![Website](https://img.shields.io/badge/Website-PublivoreTube-c28cff?style=for-the-badge&logo=githubpages&logoColor=white)](https://jackson4rocks.github.io/PublivoreTube/)\n[![License](https://img.shields.io/badge/License-MIT-4F378B?style=for-the-badge)](LICENSE)
 
 </div>
 
