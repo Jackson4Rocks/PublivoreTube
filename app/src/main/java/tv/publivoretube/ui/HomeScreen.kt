@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusable
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -341,11 +342,26 @@ private fun ShortsScreen(
     loading: Boolean,
     onVideoSelected: (Video) -> Unit,
 ) {
+    val focusRequester = remember { FocusRequester() }
+    var selectedIndex by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(videos) {
+        selectedIndex = selectedIndex.coerceIn(0, (videos.size - 1).coerceAtLeast(0))
+        if (videos.isNotEmpty()) {
+            focusRequester.requestFocus()
+        }
+    }
+
     Column(
-        modifier = Modifier.fillMaxSize().padding(42.dp),
-        verticalArrangement = Arrangement.spacedBy(18.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 42.dp, vertical = 28.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             Icon(
                 Icons.Rounded.PlayCircle,
                 null,
@@ -358,10 +374,19 @@ private fun ShortsScreen(
                 color = Color.White,
                 modifier = Modifier.padding(start = 12.dp),
             )
+            Spacer(Modifier.weight(1f))
+            if (videos.isNotEmpty()) {
+                Text(
+                    selectedIndex + 1
+                        .toString() + " / " + videos.size,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = TextMuted,
+                )
+            }
         }
 
         Text(
-            "Short-form videos discovered through YouTube search.",
+            "Up = previous  •  Down = next  •  Center = open",
             style = MaterialTheme.typography.bodyMedium,
             color = TextMuted,
         )
@@ -381,41 +406,114 @@ private fun ShortsScreen(
                 Text("No Shorts found right now.", color = TextMuted)
             }
 
-            else -> LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(18.dp),
-                contentPadding = PaddingValues(end = 24.dp),
-            ) {
-                items(videos, key = { "short-" + it.id }) { video ->
+            else -> {
+                val video = videos[selectedIndex]
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .onPreviewKeyEvent { event ->
+                            if (event.type != KeyEventType.KeyDown) {
+                                return@onPreviewKeyEvent false
+                            }
+
+                            when (event.key) {
+                                Key.DirectionDown -> {
+                                    if (selectedIndex < videos.lastIndex) {
+                                        selectedIndex += 1
+                                    }
+                                    true
+                                }
+
+                                Key.DirectionUp -> {
+                                    if (selectedIndex > 0) {
+                                        selectedIndex -= 1
+                                    }
+                                    true
+                                }
+
+                                Key.DirectionCenter,
+                                Key.Enter -> {
+                                    onVideoSelected(video)
+                                    true
+                                }
+
+                                else -> false
+                            }
+                        }
+                        .focusRequester(focusRequester)
+                        .focusable(),
+                    contentAlignment = Alignment.Center,
+                ) {
                     Card(
                         onClick = { onVideoSelected(video) },
-                        modifier = Modifier.width(210.dp).height(360.dp),
+                        modifier = Modifier
+                            .width(360.dp)
+                            .height(610.dp),
                     ) {
-                        Column(modifier = Modifier.fillMaxSize()) {
+                        Box(modifier = Modifier.fillMaxSize()) {
                             AsyncImage(
                                 model = video.thumbnail,
                                 contentDescription = video.title,
-                                modifier = Modifier.fillMaxWidth().height(280.dp),
+                                modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Crop,
                             )
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(
+                                        Brush.verticalGradient(
+                                            listOf(
+                                                Color.Transparent,
+                                                Color.Transparent,
+                                                Color(0xF0000000),
+                                            ),
+                                        ),
+                                    ),
+                            )
+
                             Column(
-                                modifier = Modifier.padding(12.dp),
-                                verticalArrangement = Arrangement.spacedBy(4.dp),
+                                modifier = Modifier
+                                    .align(Alignment.BottomStart)
+                                    .fillMaxWidth()
+                                    .padding(22.dp),
+                                verticalArrangement = Arrangement.spacedBy(6.dp),
                             ) {
-                                Text(
-                                    video.title,
-                                    style = MaterialTheme.typography.titleSmall,
-                                    color = Color.White,
-                                    maxLines = 2,
-                                )
                                 Text(
                                     video.channel,
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = TextMuted,
+                                    color = Accent,
                                     maxLines = 1,
+                                )
+                                Text(
+                                    video.title,
+                                    style = MaterialTheme.typography.titleLarge,
+                                    color = Color.White,
+                                    maxLines = 3,
+                                )
+                                Text(
+                                    video.duration,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = TextMuted,
                                 )
                             }
                         }
                     }
+
+                    Text(
+                        text = when {
+                            selectedIndex == 0 && videos.size > 1 -> "↓ Next"
+                            selectedIndex == videos.lastIndex && videos.size > 1 -> "↑ Previous"
+                            videos.size > 1 -> "↑ Previous    ↓ Next"
+                            else -> ""
+                        },
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 22.dp),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = TextMuted,
+                    )
                 }
             }
         }
