@@ -41,6 +41,9 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -605,8 +608,7 @@ private fun SearchScreen(
             Surface(
                 modifier = Modifier
                     .weight(1f)
-                    .height(68.dp)
-                    .focusRequester(focusRequester),
+                    .height(68.dp),
                 shape = PillShape,
                 colors = SurfaceDefaults.colors(containerColor = CardSurface),
             ) {
@@ -628,7 +630,24 @@ private fun SearchScreen(
                     BasicTextField(
                         value = query,
                         onValueChange = onQueryChange,
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .focusRequester(focusRequester)
+                            .onPreviewKeyEvent { event ->
+                                if (event.type != KeyEventType.KeyDown) {
+                                    return@onPreviewKeyEvent false
+                                }
+
+                                when (event.key) {
+                                    Key.Enter,
+                                    Key.DirectionCenter -> {
+                                        onSearch(query)
+                                        true
+                                    }
+
+                                    else -> false
+                                }
+                            },
                         singleLine = true,
                         textStyle = MaterialTheme.typography.bodyLarge.copy(
                             color = Color.White,
