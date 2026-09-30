@@ -64,10 +64,12 @@ private fun PublivoreTubeApp(
         homeLoading = true
         homeVideos = repository.home()
         homeLoading = false
-        if (!repository.isRemoteConfigured) {
-            statusMessage = "Demo feed active — add YOUTUBE_API_KEY for live YouTube data."
-        } else {
-            statusMessage = null
+        statusMessage = when {
+            !repository.isRemoteConfigured ->
+                "Demo feed active — add YOUTUBE_API_KEY for live YouTube data."
+            repository.lastError != null ->
+                "YouTube API error: " + repository.lastError
+            else -> null
         }
     }
 
@@ -88,6 +90,7 @@ private fun PublivoreTubeApp(
             scope.launch {
                 searchLoading = true
                 searchResults = repository.search(searchQuery)
+                statusMessage = repository.lastError?.let { "YouTube API error: " + it }
                 searchLoading = false
             }
         },
