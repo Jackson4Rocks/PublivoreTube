@@ -591,7 +591,7 @@ private fun SearchScreen(
                     .weight(1f)
                     .height(68.dp)
                     .focusRequester(focusRequester),
-                shape = ButtonDefaults.shape(PillShape),
+                shape = PillShape,
                 colors = SurfaceDefaults.colors(containerColor = CardSurface),
             ) {
                 Row(
