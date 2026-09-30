@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.launch
 import tv.publivoretube.data.Video
 import tv.publivoretube.data.VideoRepository
 import tv.publivoretube.data.YoutubeDataApi
@@ -17,7 +18,6 @@ import tv.publivoretube.data.YoutubeVideoRepository
 import tv.publivoretube.ui.HomeScreen
 import tv.publivoretube.ui.PlaybackScreen
 import tv.publivoretube.ui.theme.PublivoreTubeTheme
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     private val repository: VideoRepository by lazy {
@@ -72,30 +72,30 @@ private fun PublivoreTubeApp(
         )
     } else {
         HomeScreen(
-        videos = homeVideos,
-        searchResults = searchResults,
-        searchQuery = searchQuery,
-        homeLoading = homeLoading,
-        searchLoading = searchLoading,
-        statusMessage = statusMessage,
-        onSearchQueryChange = { searchQuery = it },
-        onSearch = { query ->
-            searchQuery = query.trim()
+            videos = homeVideos,
+            searchResults = searchResults,
+            searchQuery = searchQuery,
+            homeLoading = homeLoading,
+            searchLoading = searchLoading,
+            statusMessage = statusMessage,
+            onSearchQueryChange = { searchQuery = it },
+            onSearch = { query ->
+                searchQuery = query.trim()
 
-            if (searchQuery.isBlank()) {
-                searchResults = emptyList()
-                return@HomeScreen
-            }
-
-            scope.launch {
-                searchLoading = true
-                searchResults = repository.search(searchQuery)
-                statusMessage = repository.lastError?.let {
-                    "YouTube API error: " + it
+                if (searchQuery.isBlank()) {
+                    searchResults = emptyList()
+                    return@HomeScreen
                 }
-                searchLoading = false
-            }
-        },
+
+                scope.launch {
+                    searchLoading = true
+                    searchResults = repository.search(searchQuery)
+                    statusMessage = repository.lastError?.let {
+                        "YouTube API error: " + it
+                    }
+                    searchLoading = false
+                }
+            },
             onVideoSelected = { activeVideo = it },
         )
     }
