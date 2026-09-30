@@ -16,7 +16,7 @@ class YoutubeDataApi(
 
     suspend fun mostPopular(
         regionCode: String = "IN",
-        maxResults: Int = 12,
+        maxResults: Int = 50,
     ): List<Video> = withContext(Dispatchers.IO) {
         requireConfigured()
 
@@ -55,7 +55,7 @@ class YoutubeDataApi(
 
     
     suspend fun shorts(
-        maxResults: Int = 18,
+        maxResults: Int = 50,
     ): List<Video> = withContext(Dispatchers.IO) {
         requireConfigured()
 
@@ -65,7 +65,7 @@ class YoutubeDataApi(
             "&maxResults=" + maxResults +
             "&safeSearch=moderate" +
             "&regionCode=IN" +
-            "&order=date" +
+            "&order=" + encode(order) +
             "&key=" + encode(apiKey)
 
         val searchJson = get(searchUrl)
@@ -147,7 +147,8 @@ class YoutubeDataApi(
 
     suspend fun channelVideos(
         channelId: String,
-        maxResults: Int = 18,
+        maxResults: Int = 50,
+        order: String = "date",
     ): List<Video> = withContext(Dispatchers.IO) {
         requireConfigured()
         require(channelId.isNotBlank()) { "Channel ID is required." }
@@ -210,6 +211,251 @@ class YoutubeDataApi(
         }
     }
 
+    suspend fun channelShelves(
+        channelId: String,
+        maxPlaylistsPerSection: Int = 5,
+        maxVideosPerShelf: Int = 14,
+    ): List<ChannelShelf> = withContext(Dispatchers.IO) {
+        requireConfigured()
+        require(channelId.isNotBlank()) { "Channel ID is required." }
+
+        val json = get(
+            baseUrl + "/channelSections?part=snippet,contentDetails" +
+                "&channelId=" + encode(channelId) +
+                "&key=" + encode(apiKey),
+        )
+
+        val sections = json.getJSONArray("items")
+            .let { items ->
+                buildList {
+                    for (index in 0 until items.length()) {
+                        val item = items.getJSONObject(index)
+                        val snippet = item.optJSONObject("snippet") ?: continue
+                        add(
+                            Triple(
+                                snippet.optInt("position", Int.MAX_VALUE),
+                                snippet.optString("type"),
+                                item.optJSONObject("contentDetails"),
+                            ) to snippet.optString("title"),
+                        )
+                    }
+                }
+            }
+            .sortedBy { it.first.first }
+
+        buildList {
+            for ((metadata, sectionTitleRaw) in sections) {
+                val (position, type, details) = metadata
+                val sectionTitle = cleanText(
+                    sectionTitleRaw.ifBlank { defaultSectionTitle(type) },
+                )
+
+                when (type) {
+                    "recentUploads" -> {
+                        val videos = channelVideos(
+                            channelId = channelId,
+                            maxResults = maxVideosPerShelf,
+                            order = "date",
+                        )
+                        if (videos.isNotEmpty()) {
+                            add(
+                                ChannelShelf(
+                                    position = position,
+                                    title = sectionTitle,
+                                    type = type,
+                                    rows = listOf(
+                                        ChannelShelfRow(
+                                            title = sectionTitle,
+                                            videos = videos,
+                                        ),
+                                    ),
+                                ),
+                            )
+                        }
+                    }
+
+                    "popularUploads" -> {
+                        val videos = channelVideos(
+                            channelId = channelId,
+                            maxResults = maxVideosPerShelf,
+                            order = "viewCount",
+                        )
+                        if (videos.isNotEmpty()) {
+                            add(
+                                ChannelShelf(
+                                    position = position,
+                                    title = sectionTitle,
+                                    type = type,
+                                    rows = listOf(
+                                        ChannelShelfRow(
+                                            title = sectionTitle,
+                                            videos = videos,
+                                        ),
+                                    ),
+                                ),
+                            )
+                        }
+                    }
+
+                    "singlePlaylist", "multiplePlaylists" -> {
+                        val playlistIds = details
+                            ?.optJSONArray("playlists")
+                            ?.let { playlistArray ->
+                                buildList {
+                                    for (index in 0 until playlistArray.length()) {
+                                        val id = playlistArray.optString(index)
+                                        if (id.isNotBlank()) add(id)
+                                    }
+                                }
+                            }
+                            .orEmpty()
+                            .take(maxPlaylistsPerSection)
+
+                        val rows = playlistIds.mapNotNull { playlistId ->
+                            val playlistTitle = playlistTitle(playlistId)
+                            val videos = playlistVideos(playlistId, maxVideosPerShelf)
+                            if (videos.isEmpty()) {
+                                null
+                            } else {
+                                ChannelShelfRow(
+                                    title = playlistTitle.ifBlank { sectionTitle },
+                                    playlistId = playlistId,
+                                    videos = videos,
+                                )
+                            }
+                        }
+
+                        if (rows.isNotEmpty()) {
+                            add(
+                                ChannelShelf(
+                                    position = position,
+                                    title = sectionTitle,
+                                    type = type,
+                                    rows = rows,
+                                ),
+                            )
+                        }
+                    }
+
+                    "allPlaylists" -> {
+                        val playlistRows = channelPlaylists(channelId, maxPlaylistsPerSection)
+                            .mapNotNull { playlist ->
+                                val videos = playlistVideos(playlist.first, maxVideosPerShelf)
+                                if (videos.isEmpty()) {
+                                    null
+                                } else {
+                                    ChannelShelfRow(
+                                        title = playlist.second,
+                                        playlistId = playlist.first,
+                                        videos = videos,
+                                    )
+                                }
+                            }
+
+                        if (playlistRows.isNotEmpty()) {
+                            add(
+                                ChannelShelf(
+                                    position = position,
+                                    title = sectionTitle,
+                                    type = type,
+                                    rows = playlistRows,
+                                ),
+                            )
+                        }
+                    }
+                }
+            }
+        }.sortedBy { it.position }
+    }
+
+    private suspend fun playlistTitle(playlistId: String): String {
+        val json = get(
+            baseUrl + "/playlists?part=snippet&id=" +
+                encode(playlistId) +
+                "&key=" + encode(apiKey),
+        )
+        return json.getJSONArray("items")
+            .optJSONObject(0)
+            ?.optJSONObject("snippet")
+            ?.optString("title")
+            ?.let(::cleanText)
+            .orEmpty()
+    }
+
+    private suspend fun playlistVideos(
+        playlistId: String,
+        maxResults: Int,
+    ): List<Video> {
+        val json = get(
+            baseUrl + "/playlistItems?part=snippet,contentDetails" +
+                "&playlistId=" + encode(playlistId) +
+                "&maxResults=" + maxResults +
+                "&key=" + encode(apiKey),
+        )
+        val items = json.getJSONArray("items")
+
+        return buildList {
+            for (index in 0 until items.length()) {
+                val item = items.getJSONObject(index)
+                val snippet = item.optJSONObject("snippet") ?: continue
+                val resource = snippet.optJSONObject("resourceId") ?: continue
+                val id = resource.optString("videoId")
+                if (id.isBlank()) continue
+
+                add(
+                    Video(
+                        id = id,
+                        title = cleanText(snippet.optString("title")),
+                        channel = cleanText(snippet.optString("videoOwnerChannelTitle"))
+                            .ifBlank { cleanText(snippet.optString("channelTitle")) },
+                        duration = "",
+                        thumbnail = thumbnailUrl(snippet),
+                        youtubeUrl = "https://www.youtube.com/watch?v=$id",
+                        channelId = snippet.optString("videoOwnerChannelId")
+                            .takeIf(String::isNotBlank),
+                    ),
+                )
+            }
+        }
+    }
+
+    private suspend fun channelPlaylists(
+        channelId: String,
+        maxResults: Int,
+    ): List<Pair<String, String>> {
+        val json = get(
+            baseUrl + "/playlists?part=snippet" +
+                "&channelId=" + encode(channelId) +
+                "&maxResults=" + maxResults +
+                "&key=" + encode(apiKey),
+        )
+        val items = json.getJSONArray("items")
+
+        return buildList {
+            for (index in 0 until items.length()) {
+                val item = items.getJSONObject(index)
+                val id = item.optString("id")
+                val title = item.optJSONObject("snippet")
+                    ?.optString("title")
+                    ?.let(::cleanText)
+                    .orEmpty()
+                if (id.isNotBlank() && title.isNotBlank()) {
+                    add(id to title)
+                }
+            }
+        }
+    }
+
+    private fun defaultSectionTitle(type: String): String =
+        when (type) {
+            "recentUploads" -> "Latest videos"
+            "popularUploads" -> "Popular uploads"
+            "singlePlaylist" -> "Featured playlist"
+            "multiplePlaylists" -> "Featured playlists"
+            "allPlaylists" -> "Playlists"
+            else -> "Featured"
+        }
+
     private fun parseDurationSeconds(value: String): Long {
         val parts = value.split(":").mapNotNull { it.toLongOrNull() }
         return when (parts.size) {
@@ -221,7 +467,7 @@ class YoutubeDataApi(
 
     suspend fun search(
         query: String,
-        maxResults: Int = 18,
+        maxResults: Int = 50,
     ): List<Video> = withContext(Dispatchers.IO) {
         requireConfigured()
 
