@@ -16,7 +16,7 @@ import tv.publivoretube.data.VideoRepository
 import tv.publivoretube.data.YoutubeDataApi
 import tv.publivoretube.data.YoutubeVideoRepository
 import tv.publivoretube.ui.HomeScreen
-import tv.publivoretube.ui.PlaybackScreen
+import tv.publivoretube.ui.YouTubePlayerScreen
 import tv.publivoretube.ui.theme.PublivoreTubeTheme
 
 class MainActivity : ComponentActivity() {
@@ -66,7 +66,7 @@ private fun PublivoreTubeApp(
     }
 
     if (activeVideo != null) {
-        PlaybackScreen(
+        YouTubePlayerScreen(
             video = activeVideo!!,
             onBack = { activeVideo = null },
         )
