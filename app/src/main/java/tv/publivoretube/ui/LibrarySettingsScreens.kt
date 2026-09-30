@@ -438,11 +438,11 @@ private fun EmptyPanel(title: String, message: String) {
 
 @Composable
 private fun TvActionButton(
-    modifier: Modifier = Modifier,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     text: String,
     onClick: () -> Unit,
-) {
+    modifier: Modifier = Modifier,
+    ) {
     Button(
         onClick = onClick,
         modifier = modifier.height(54.dp),
