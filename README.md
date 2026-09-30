@@ -1,240 +1,205 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/Jackson4Rocks/PublivoreTube/main/docs/assets/publivoretube-icon.svg" alt="PublivoreTube official icon" width="150"/>
+<img src="https://raw.githubusercontent.com/Jackson4Rocks/PublivoreTube/main/docs/assets/publivoretube-icon.svg" alt="PublivoreTube" width="140"/>
 
 # PublivoreTube
 
-### YouTube, reimagined for your TV.
+### YouTube, built for the big screen.
 
-A polished, open-source Android TV client focused on **remote-first navigation**, **Material 3-inspired UI**, and a clean separation between **content metadata** and **playback**.
+A modern, open-source **Android TV video app** made for the couch — big visuals, simple remote navigation, and a familiar TV-first layout.
 
 [![Android Build](https://github.com/Jackson4Rocks/PublivoreTube/actions/workflows/android.yml/badge.svg)](https://github.com/Jackson4Rocks/PublivoreTube/actions/workflows/android.yml)
 [![Android TV](https://img.shields.io/badge/Android%20TV-8.0%2B-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://developer.android.com/tv)
-[![Kotlin](https://img.shields.io/badge/Kotlin-Compose-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)](https://kotlinlang.org/)
-[![License](https://img.shields.io/badge/MIT-License-4F378B?style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-4F378B?style=for-the-badge)](LICENSE)
 
 </div>
 
 ---
 
-## ✦ What is PublivoreTube?
+## 📺 What is PublivoreTube?
 
-PublivoreTube is my Android TV client project built around one idea:
+PublivoreTube is a **TV-first YouTube client** for Android TV.
 
-> **The TV experience should feel like a TV experience.**
+It is designed around the way people actually use a television:
 
-Big visual targets, predictable D-pad movement, obvious focus states, comfortable spacing, and an expressive interface designed for the couch.
+**sit back → grab the remote → browse → pick something → watch.**
 
-The project keeps **metadata**, **UI**, and the future **playback layer** separate so each part can evolve cleanly.
-
-<table>
-<tr>
-<td width="50%">
-
-### ◈ Built for the couch
-
-- D-pad / remote-first navigation
-- Android TV launcher integration
-- Large cards and readable typography
-- Home, Search, Subscriptions, History, Settings and About
-- Android 8.0+ target
-
-</td>
-<td width="50%">
-
-### ◆ Built to experiment
-
-- Jetpack Compose
-- Compose for TV / Material 3 for TV
-- YouTube Data API v3
-- Coil thumbnail loading
-- Media3 / ExoPlayer foundation
-- Demo feed without an API key
-
-</td>
-</tr>
-</table>
+That means large cards, clear focus states, horizontal content rows, D-pad navigation, and as little UI clutter as possible.
 
 ---
 
-## ✦ Expressive visual language
+## ✨ What you can do
 
-The UI direction uses a restrained Material 3-inspired shape system: **pills, rounded rectangles, circles, diamonds, soft asymmetric forms, and tonal surfaces**. The goal is expressive hierarchy without turning the TV interface into visual noise.
+### 🏠 Home
+
+Browse a TV-style home screen with long horizontal shelves for:
+
+- Recommended videos
+- Trending content
+- Continue watching
+- Shorts
+- More content as you keep scrolling
+
+### 🔎 Search
+
+Search YouTube and browse the results in the same horizontal, remote-friendly card layout used throughout the app.
+
+### ▶️ Watch videos
+
+Videos open **inside PublivoreTube** using YouTube's official embedded player, so you stay in the app instead of being thrown into a separate browser.
+
+### 📱 Shorts
+
+A dedicated Shorts experience with TV remote controls:
+
+- **Center / OK** — play or pause
+- **↑ Up** — previous Short
+- **↓ Down** — next Short
+- Shorts can autoplay through the loaded feed
+
+### 📺 Channels
+
+Open a channel directly inside PublivoreTube.
+
+Channel pages can show:
+
+- Channel artwork
+- Subscriber and video counts
+- Description
+- Latest videos
+- Popular uploads
+- Playlists
+- Featured playlist sections
+- Channel shelves in the order provided by YouTube
+
+### ⭐ Subscriptions
+
+Connect an optional Google / YouTube account to load your subscriptions and account-aware features.
+
+### 🕘 History
+
+Keep a local watch history so recently watched videos are easy to find again.
+
+### 🧩 SponsorBlock
+
+PublivoreTube can check SponsorBlock and display submitted segment markers for the current video, including categories such as sponsors, intros, outros and self-promotion.
+
+> Automatic SponsorBlock skipping is **not** enabled in the current release.
+
+### ⚙️ Settings
+
+Customize things like:
+
+- Autoplay
+- Captions
+- Video quality preference
+- Remember position
+- Thumbnail visibility
+- Reduced animations
+- High contrast
+
+---
+
+## 🎮 Built for the remote
+
+PublivoreTube is designed for D-pad navigation rather than touch.
+
+Everything important is built around:
+
+**← →** move across shelves  
+**↑ ↓** move between sections  
+**Center / OK** select  
+**Back** return
+
+No tiny buttons. No cramped desktop-style controls.
+
+---
+
+## 🖥️ Android TV
+
+PublivoreTube includes proper Android TV launcher support and is designed for **Android 8.0 / API 26 and newer**.
+
+It is intended for Android TV and TV-style Android devices rather than phones.
+
+---
+
+## 🚀 Pre-release 1
+
+PublivoreTube is currently approaching its **first public pre-release**.
+
+The project is still evolving, so expect some rough edges while the TV experience gets polished.
+
+### Current focus
+
+- ✅ TV-first home screen
+- ✅ Horizontal video shelves
+- ✅ YouTube search
+- ✅ Shorts
+- ✅ Channel pages
+- ✅ Channel playlists / sections
+- ✅ Subscriptions
+- ✅ Local history
+- ✅ Settings
+- ✅ Android TV launcher support
+- ✅ SponsorBlock segment information
+- ✅ In-app YouTube playback
+
+---
+
+## 📦 Getting the app
+
+Pre-release development APKs are published by the project's GitHub Actions workflow.
+
+**[Open GitHub Actions →](https://github.com/Jackson4Rocks/PublivoreTube/actions/workflows/android.yml)**
+
+For a stable, user-facing release, check the **Releases** section once pre-release 1 is published.
+
+> **Important:** current automated debug builds are development builds. If a build was created without a YouTube Data API key, PublivoreTube falls back to its demo feed rather than showing live YouTube data.
+
+---
+
+## 🔐 Google / YouTube account
+
+You do **not** need to sign in just to browse the app.
+
+Sign-in is optional and is used for account-based features such as subscriptions and other YouTube account actions.
+
+PublivoreTube uses Google's OAuth flow rather than asking for your Google password directly.
+
+---
+
+## 💜 Open source
+
+PublivoreTube is open source under the **MIT License**.
+
+You can inspect the code, report bugs, suggest features, or help improve the TV experience.
+
+**GitHub:**  
+https://github.com/Jackson4Rocks/PublivoreTube
+
+---
+
+## 🗺️ What's next?
+
+The goal is simple:
+
+> Make PublivoreTube feel like a polished, native YouTube-style experience built specifically for television.
+
+That means more polished browsing, richer channel pages, smoother playback UX, better account features, and continued improvements to remote navigation.
+
+---
+
+## 👤 Maintainer
 
 <div align="center">
 
-| Pill | Rounded container | Circle | Diamond | Soft asymmetric form |
-|:---:|:---:|:---:|:---:|:---:|
-| Navigation | Content cards | Status | Focus accent | Hero decoration |
-
-</div>
-
----
-
-## ✦ Current state
-
-| Area | Status |
-|---|:---:|
-| Android TV / Leanback launcher | ✅ |
-| Android 8.0+ | ✅ |
-| D-pad navigation | ✅ |
-| Material 3 for TV | ✅ |
-| YouTube Data API metadata | ✅ |
-| YouTube search | ✅ |
-| Real thumbnails | ✅ |
-| Demo feed | ✅ |
-| Media3 / ExoPlayer foundation | ✅ |
-| Native in-app video playback | 🚧 |
-| Persistent history | 🚧 |
-| Persistent settings | 🚧 |
-
----
-
-## ✦ Architecture
-
-```text
-                 ┌───────────────────────────┐
-                 │       Compose / TV UI   │
-                 └─────────────┬─────────────┘
-                               │
-                               ▼
-                 ┌───────────────────────────┐
-                 │      VideoRepository     │
-                 └─────────────┬─────────────┘
-                         ┌─────┴─────┐
-                         ▼           ▼
-                ┌──────────────┐  ┌─────────────┐
-                │ YouTube API  │  │ Demo Feed   │
-                │   v3         │  │  fallback   │
-                └──────┬───────┘  └─────────────┘
-                       │
-                       ▼
-                ┌──────────────┐
-                │    Video     │
-                └──────┬───────┘
-                       │
-                       ▼
-                ┌──────────────┐
-                │    Media3    │
-                │   playback   │
-                └──────────────┘
-```
-
----
-
-## ✦ YouTube Data API
-
-PublivoreTube **does not commit API credentials** to the repository.
-
-Create a local `local.properties`:
-
-```properties
-YOUTUBE_API_KEY=YOUR_API_KEY_HERE
-```
-
-A `YOUTUBE_API_KEY` environment variable is also supported.
-
-Without a key, the app falls back to built-in demo content.
-
-### Playback note
-
-The YouTube Data API provides **metadata and search results**, not a general-purpose direct media stream URL.
-
-For the current implementation, selecting a video opens its normal YouTube URL as a compatibility fallback. Native in-app playback remains a separate development track.
-
----
-
-## ✦ Build
-
-### Requirements
-
-- JDK 17+
-- Android SDK
-- Android SDK Platform 36
-- Android Build Tools 36.0.0
-- A Gradle version compatible with the project
-
-### Debug
-
-```bash
-gradle :app:assembleDebug
-```
-
-### Release
-
-```bash
-gradle :app:assembleRelease
-```
-
-### Install over ADB
-
-```bash
-adb install -r app/build/outputs/apk/debug/app-debug.apk
-```
-
-Release output:
-
-```text
-app/build/outputs/apk/release/app-release.apk
-```
-
----
-
-## ✦ Release signing
-
-The release build uses a local signing keystore.
-
-Keep these **out of GitHub**:
-
-```text
-local.properties
-*.jks
-*.keystore
-```
-
-The actual keystore and passwords stay on your machine / CI secrets.
-
----
-
-## ✦ Roadmap
-
-### 0.1.x — Foundation
-- [x] Android TV shell
-- [x] Remote-first UI
-- [x] Material 3 TV components
-- [x] YouTube Data API metadata/search
-- [x] Real thumbnails
-- [x] About / maintainer page
-- [x] Custom official app icon
-- [x] CI APK artifacts
-
-### 0.2 — Experience
-- [ ] Native in-app player
-- [ ] Video details screen
-- [ ] Persistent history
-- [ ] Persistent settings
-- [ ] Channel pages
-- [ ] Search filters
-
-### 0.3 — Power features
-- [ ] Playback controls
-- [ ] Sponsor / segment handling
-- [ ] Playback filtering
-- [ ] Account-aware features
-
----
-
-## ✦ Maintainer
-
-<div align="center">
+<img src="https://github.com/Jackson4Rocks.png?size=160" alt="Leon Sony" width="96" height="96"/>
 
 ### Leon Sony
 
-**Project creator & maintainer**
+**Creator & maintainer of PublivoreTube**
 
 [![GitHub](https://img.shields.io/badge/GitHub-Jackson4Rocks-1D1B20?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Jackson4Rocks)
-
-**Build • Break • Improve • Repeat.**
 
 </div>
 
@@ -242,8 +207,8 @@ The actual keystore and passwords stay on your machine / CI secrets.
 
 <div align="center">
 
-### 💜 PublivoreTube
+### 💗 PublivoreTube
 
-**Open source. TV-first. Still evolving.**
+**Open source. TV-first. Made for the couch.**
 
 </div>
