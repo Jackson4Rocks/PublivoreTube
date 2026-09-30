@@ -204,7 +204,7 @@ fun YouTubePlayerScreen(
 private fun playerHtml(videoId: String): String {
     val safeId = videoId
         .replace("&", "")
-        .replace(""", "")
+        .replace("\"", "")
         .replace("'", "")
         .replace("<", "")
         .replace(">", "")
