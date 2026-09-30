@@ -111,8 +111,8 @@ class GoogleAuthManager(
                     .apply()
 
                 return@withContext profile
-            } catch (error: IOException) {
-                val message = error.message.orEmpty()
+            } catch (exception: IOException) {
+                val message = exception.message.orEmpty()
                 when {
                     message.contains("authorization_pending") -> Unit
                     message.contains("slow_down") -> interval += 5L
