@@ -3,7 +3,6 @@ package tv.publivoretube.ui
 import android.content.Intent
 import android.graphics.Color as AndroidColor
 import android.net.Uri
-import android.webkit.CookieManager
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -87,8 +86,8 @@ fun YouTubePlayerScreen(
     val webView = remember(videoId) {
         WebView(context).apply {
             setBackgroundColor(AndroidColor.BLACK)
-            isFocusable = true
-            isFocusableInTouchMode = true
+            isFocusable = false
+            isFocusableInTouchMode = false
 
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
@@ -97,16 +96,11 @@ fun YouTubePlayerScreen(
             settings.allowContentAccess = true
             settings.allowFileAccess = false
 
-            CookieManager.getInstance().setAcceptCookie(true)
-            CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
-
+            webChromeClient = WebChromeClient()
             webViewClient = object : WebViewClient() {
                 override fun onPageFinished(view: WebView?, url: String?) {
                     super.onPageFinished(view, url)
-                    view?.evaluateJavascript(
-                        "window.ptBindPlayer && window.ptBindPlayer();",
-                        null,
-                    )
+                    statusMessage = "YouTube player ready."
                 }
 
                 override fun onReceivedError(
@@ -116,7 +110,8 @@ fun YouTubePlayerScreen(
                 ) {
                     super.onReceivedError(view, request, error)
                     if (request?.isForMainFrame == true) {
-                        statusMessage = "YouTube player failed to load. Check the device internet connection."
+                        statusMessage =
+                            "YouTube player could not load. Check the device internet connection."
                     }
                 }
 
@@ -127,21 +122,26 @@ fun YouTubePlayerScreen(
                 ) {
                     super.onReceivedHttpError(view, request, errorResponse)
                     if (request?.isForMainFrame == true &&
-                        errorResponse?.statusCode ?: 200 >= 400
+                        (errorResponse?.statusCode ?: 200) >= 400
                     ) {
-                        statusMessage = "YouTube player returned HTTP " +
-                            (errorResponse?.statusCode ?: 0) + "."
+                        statusMessage =
+                            "YouTube player returned HTTP " +
+                                (errorResponse?.statusCode ?: 0) + "."
                     }
                 }
             }
-            webChromeClient = WebChromeClient()
 
-            loadDataWithBaseURL(
-                "https://tv.publivoretube/",
-                playerHtml(videoId),
-                "text/html",
-                "UTF-8",
-                "https://tv.publivoretube/",
+            val embedUrl =
+                "https://www.youtube.com/embed/$videoId" +
+                    "?autoplay=1" +
+                    "&controls=1" +
+                    "&playsinline=1" +
+                    "&rel=0" +
+                    "&fs=1"
+
+            loadUrl(
+                embedUrl,
+                mapOf("Referer" to "https://tv.publivoretube"),
             )
         }
     }
@@ -154,13 +154,20 @@ fun YouTubePlayerScreen(
         }
     }
 
-    BackHandler(onBack = onBack)
+    var playerFocused by remember(videoId) { mutableStateOf(false) }
 
-    fun runPlayerCommand(command: String) {
-        webView.post {
-            webView.evaluateJavascript(command, null)
+    BackHandler {
+        if (playerFocused || webView.hasFocus()) {
+            webView.clearFocus()
+            webView.isFocusable = false
+            webView.isFocusableInTouchMode = false
+            playerFocused = false
+            statusMessage = "PublivoreTube controls focused."
+        } else {
+            onBack()
         }
     }
+
 
     fun shareVideo() {
         context.startActivity(
@@ -265,6 +272,18 @@ fun YouTubePlayerScreen(
                 }
             }
 
+            ActionButton(
+                icon = Icons.Rounded.OpenInNew,
+                text = "Player Controls",
+                onClick = {
+                    webView.isFocusable = true
+                    webView.isFocusableInTouchMode = true
+                    webView.requestFocus()
+                    playerFocused = true
+                    statusMessage = "Player focused. Press Back to return to PublivoreTube controls."
+                },
+            )
+
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(9.dp),
@@ -275,8 +294,7 @@ fun YouTubePlayerScreen(
                         icon = Icons.Rounded.PlayArrow,
                         text = "Play",
                         onClick = {
-                            runPlayerCommand("window.ptPlay && window.ptPlay();")
-                            statusMessage = "Play"
+                            statusMessage = "Use the YouTube player controls to play."
                         },
                     )
                 }
@@ -286,8 +304,7 @@ fun YouTubePlayerScreen(
                         icon = Icons.Rounded.Pause,
                         text = "Pause",
                         onClick = {
-                            runPlayerCommand("window.ptPause && window.ptPause();")
-                            statusMessage = "Pause"
+                            statusMessage = "Use the YouTube player controls to pause."
                         },
                     )
                 }
@@ -337,15 +354,10 @@ fun YouTubePlayerScreen(
                         onClick = {
                             captionsEnabled = !captionsEnabled
                             if (captionsEnabled) {
-                                runPlayerCommand(
-                                    "window.ptCaptions && window.ptCaptions(true);",
-                                )
-                                statusMessage = "Captions requested. Use the YouTube player controls to choose a language."
+                                statusMessage =
+                                    "Open the YouTube player controls to choose captions."
                             } else {
-                                runPlayerCommand(
-                                    "window.ptCaptions && window.ptCaptions(false);",
-                                )
-                                statusMessage = "Captions requested to turn off."
+                                statusMessage = "Captions are off."
                             }
                         },
                     )
@@ -464,42 +476,5 @@ private fun ActionButton(
             )
             Text(text)
         }
-    }
-}
-private fun playerHtml(videoId: String): String {
-    val safeId = videoId.filter { it.isLetterOrDigit() || it == '-' || it == '_' }
-
-    return buildString {
-        append("<!doctype html>")
-        append("<html><head>")
-        append("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, viewport-fit=cover\">")
-        append("<style>")
-        append("html,body{margin:0;padding:0;width:100%;height:100%;background:#000;overflow:hidden;}")
-        append("#player{display:block;width:100%;height:100%;border:0;}")
-        append("</style></head><body>")
-        append("<iframe id=\"player\" title=\"YouTube video\" type=\"text/html\" ")
-        append("width=\"100%\" height=\"100%\" ")
-        append("src=\"https://www.youtube.com/embed/")
-        append(safeId)
-        append("?enablejsapi=1&autoplay=1&controls=1&playsinline=1&rel=0&fs=1&origin=https%3A%2F%2Ftv.publivoretube\" ")
-        append("frameborder=\"0\" allow=\"autoplay; encrypted-media; picture-in-picture\" allowfullscreen></iframe>")
-        append("<script>")
-        append("var player=null;")
-        append("function onYouTubeIframeAPIReady(){window.ptBindPlayer();}")
-        append("window.ptBindPlayer=function(){")
-        append("if(player||!window.YT||!YT.Player)return;")
-        append("player=new YT.Player('player');")
-        append("};")
-        append("var tag=document.createElement('script');")
-        append("tag.src='https://www.youtube.com/iframe_api';")
-        append("document.head.appendChild(tag);")
-        append("window.ptPlay=function(){if(player)player.playVideo();};")
-        append("window.ptPause=function(){if(player)player.pauseVideo();};")
-        append("window.ptCaptions=function(enabled){")
-        append("if(!player)return;")
-        append("if(enabled){player.loadModule('captions');player.setOption('captions','track',{languageCode:'en'});}")
-        append("else{player.unloadModule('captions');}")
-        append("};")
-        append("</script></body></html>")
     }
 }
