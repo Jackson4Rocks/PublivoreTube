@@ -13,6 +13,9 @@ if (localPropertiesFile.exists()) {
 val youtubeApiKey = localProperties.getProperty("YOUTUBE_API_KEY")
     ?: System.getenv("YOUTUBE_API_KEY")
     ?: ""
+val googleOauthClientId = localProperties.getProperty("GOOGLE_OAUTH_CLIENT_ID")
+    ?: System.getenv("GOOGLE_OAUTH_CLIENT_ID")
+    ?: ""
 
 android {
     namespace = "tv.publivoretube"
@@ -29,6 +32,12 @@ android {
             "String",
             "YOUTUBE_API_KEY",
             "\"$youtubeApiKey\"",
+        )
+
+        buildConfigField(
+            "String",
+            "GOOGLE_OAUTH_CLIENT_ID",
+            "\"$googleOauthClientId\"",
         )
     }
 
