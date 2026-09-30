@@ -3,7 +3,6 @@ package tv.publivoretube.ui
 import android.content.Intent
 import android.graphics.Color as AndroidColor
 import android.net.Uri
-import android.view.View
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -90,10 +89,8 @@ fun YouTubePlayerScreen(
     val webView = remember(videoId) {
         WebView(context).apply {
             setBackgroundColor(AndroidColor.BLACK)
-            setLayerType(View.LAYER_TYPE_HARDWARE, null)
             isFocusable = false
             isFocusableInTouchMode = false
-            isClickable = false
 
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
