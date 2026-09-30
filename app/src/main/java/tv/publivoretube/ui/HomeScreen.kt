@@ -340,28 +340,19 @@ private fun NavigationItem(
 private fun ShortsScreen(
     videos: List<Video>,
     loading: Boolean,
-    onVideoSelected: (Video) -> Unit,
+    onShortSelected: (List<Video>, Int) -> Unit,
 ) {
-    val focusRequester = remember { FocusRequester() }
     var selectedIndex by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(videos) {
         selectedIndex = selectedIndex.coerceIn(0, (videos.size - 1).coerceAtLeast(0))
-        if (videos.isNotEmpty()) {
-            focusRequester.requestFocus()
-        }
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 42.dp, vertical = 28.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp),
+        modifier = Modifier.fillMaxSize().padding(42.dp),
+        verticalArrangement = Arrangement.spacedBy(18.dp),
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 Icons.Rounded.PlayCircle,
                 null,
@@ -377,16 +368,15 @@ private fun ShortsScreen(
             Spacer(Modifier.weight(1f))
             if (videos.isNotEmpty()) {
                 Text(
-                    selectedIndex + 1
-                        .toString() + " / " + videos.size,
-                    style = MaterialTheme.typography.titleMedium,
+                    (selectedIndex + 1).toString() + " / " + videos.size,
+                    style = MaterialTheme.typography.labelLarge,
                     color = TextMuted,
                 )
             }
         }
 
         Text(
-            "Up = previous  •  Down = next  •  Center = open",
+            "Select a Short to start autoplay. In the viewer: ↑ previous • ↓ next • Center play/pause.",
             style = MaterialTheme.typography.bodyMedium,
             color = TextMuted,
         )
@@ -407,113 +397,70 @@ private fun ShortsScreen(
             }
 
             else -> {
-                val video = videos[selectedIndex]
+                val current = videos[selectedIndex]
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .onPreviewKeyEvent { event ->
-                            if (event.type != KeyEventType.KeyDown) {
-                                return@onPreviewKeyEvent false
-                            }
-
-                            when (event.key) {
-                                Key.DirectionDown -> {
-                                    if (selectedIndex < videos.lastIndex) {
-                                        selectedIndex += 1
-                                    }
-                                    true
-                                }
-
-                                Key.DirectionUp -> {
-                                    if (selectedIndex > 0) {
-                                        selectedIndex -= 1
-                                    }
-                                    true
-                                }
-
-                                Key.DirectionCenter,
-                                Key.Enter -> {
-                                    onVideoSelected(video)
-                                    true
-                                }
-
-                                else -> false
-                            }
-                        }
-                        .focusRequester(focusRequester)
-                        .focusable(),
-                    contentAlignment = Alignment.Center,
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.spacedBy(26.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Card(
-                        onClick = { onVideoSelected(video) },
+                        onClick = { onShortSelected(videos, selectedIndex) },
                         modifier = Modifier
-                            .width(360.dp)
-                            .height(610.dp),
+                            .width(260.dp)
+                            .height(430.dp),
                     ) {
-                        Box(modifier = Modifier.fillMaxSize()) {
+                        Column(modifier = Modifier.fillMaxSize()) {
                             AsyncImage(
-                                model = video.thumbnail,
-                                contentDescription = video.title,
-                                modifier = Modifier.fillMaxSize(),
+                                model = current.thumbnail,
+                                contentDescription = current.title,
+                                modifier = Modifier.fillMaxWidth().height(350.dp),
                                 contentScale = ContentScale.Crop,
                             )
-
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(
-                                        Brush.verticalGradient(
-                                            listOf(
-                                                Color.Transparent,
-                                                Color.Transparent,
-                                                Color(0xF0000000),
-                                            ),
-                                        ),
-                                    ),
-                            )
-
                             Column(
-                                modifier = Modifier
-                                    .align(Alignment.BottomStart)
-                                    .fillMaxWidth()
-                                    .padding(22.dp),
-                                verticalArrangement = Arrangement.spacedBy(6.dp),
+                                modifier = Modifier.padding(14.dp),
+                                verticalArrangement = Arrangement.spacedBy(5.dp),
                             ) {
                                 Text(
-                                    video.channel,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Accent,
-                                    maxLines = 1,
-                                )
-                                Text(
-                                    video.title,
-                                    style = MaterialTheme.typography.titleLarge,
+                                    current.title,
+                                    style = MaterialTheme.typography.titleSmall,
                                     color = Color.White,
-                                    maxLines = 3,
+                                    maxLines = 2,
                                 )
                                 Text(
-                                    video.duration,
+                                    current.channel,
                                     style = MaterialTheme.typography.bodySmall,
                                     color = TextMuted,
+                                    maxLines = 1,
                                 )
                             }
                         }
                     }
 
-                    Text(
-                        text = when {
-                            selectedIndex == 0 && videos.size > 1 -> "↓ Next"
-                            selectedIndex == videos.lastIndex && videos.size > 1 -> "↑ Previous"
-                            videos.size > 1 -> "↑ Previous    ↓ Next"
-                            else -> ""
-                        },
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(bottom = 22.dp),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = TextMuted,
-                    )
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        Text(
+                            "TV Shorts Player",
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = Color.White,
+                        )
+                        Text(
+                            "Click any Short to enter the full-screen viewer.",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = TextMuted,
+                        )
+                        Text("Center", color = AccentStrong, style = MaterialTheme.typography.titleMedium)
+                        Text("Start playback from the selected Short.", color = TextMuted)
+                        Text("↑ / ↓", color = AccentStrong, style = MaterialTheme.typography.titleMedium)
+                        Text("Move to the previous or next Short while watching.", color = TextMuted)
+                        Text("Autoplay", color = AccentStrong, style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            "The Shorts feed continues automatically through the loaded list.",
+                            color = TextMuted,
+                        )
+                    }
                 }
             }
         }
