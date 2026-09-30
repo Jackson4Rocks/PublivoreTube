@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#08070d">
+  <meta name="theme-color" content="#090812">
   <meta name="description" content="PublivoreTube — an open-source, TV-first YouTube client for Android TV and Google TV.">
   <meta property="og:title" content="PublivoreTube — YouTube, built for the big screen.">
   <meta property="og:description" content="A remote-first YouTube experience for Android TV and Google TV.">
@@ -14,7 +14,12 @@
 <body>
 <header class="header">
   <a class="brand" href="#top"><img src="assets/publivoretube-icon.svg" alt=""> <span>PublivoreTube</span></a>
-  <nav><a href="#features">Features</a><a href="#screens">Screenshots</a><a href="#roadmap">Roadmap</a><a href="https://github.com/Jackson4Rocks/PublivoreTube" target="_blank" rel="noreferrer">GitHub ↗</a></nav>
+  <nav aria-label="Primary navigation">
+    <a href="#features">Features</a>
+    <a href="#screens">Screenshots</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="https://github.com/Jackson4Rocks/PublivoreTube" target="_blank" rel="noreferrer">GitHub ↗</a>
+  </nav>
   <a class="small-cta" href="https://github.com/Jackson4Rocks/PublivoreTube/releases" target="_blank" rel="noreferrer">Releases ↗</a>
 </header>
 
@@ -27,19 +32,23 @@
     <div class="buttons"><a class="primary" href="https://github.com/Jackson4Rocks/PublivoreTube/releases" target="_blank" rel="noreferrer">Get the build ↗</a><a class="secondary" href="https://github.com/Jackson4Rocks/PublivoreTube" target="_blank" rel="noreferrer">View source ↗</a></div>
     <div class="chips"><span>API 26+</span><span>Material TV</span><span>Remote-first</span><span>MIT</span></div>
   </div>
-  <div class="tv-wrap">
+  <div class="hero-shot">
     <div class="glow"></div>
-    <div class="tv">
-      <div class="tvbar"><b>●</b> PublivoreTube <em>HOME</em></div>
-      <div class="mock-home">
-        <aside><div class="fake-logo">▰<b>t</b></div><div class="nav active">⌂ <span>Home</span></div><div class="nav">⌕ <span>Search</span></div><div class="nav">▣ <span>Subscription</span></div><div class="nav">▶ <span>Shorts</span></div><div class="nav">◴ <span>History</span></div><div class="nav">⚙ <span>Settings</span></div></aside>
-        <section class="mock-content"><h3>Recommended</h3><div class="cards"><article><div class="thumb warm">JADAL<br>ZAMANA</div><b>Jadal Zamana (Interval Theme)</b></article><article><div class="thumb dark">PRAHAAR<br><small>OFFICIAL TRAILER</small></div><b>Prahaar: The Untold Story</b></article></div><h3>Trending</h3><div class="cards"><article><div class="thumb bright"></div></article><article><div class="thumb game"></div></article></div></section>
-      </div>
-    </div>
+    <figure class="image-frame hero-frame"><img src="screenshots/home.webp" alt="PublivoreTube Home screen on Android TV"></figure>
   </div>
 </section>
 
 <section class="ticker"><span>HOME SHELVES</span><span>SEARCH</span><span>SHORTS</span><span>CHANNELS</span><span>HISTORY</span><span>SUBSCRIPTIONS</span><span>SPONSORBLOCK</span></section>
+
+<section class="about section">
+  <div class="about-copy">
+    <div class="eyebrow">THE APP</div>
+    <h2>A TV interface that actually <span>feels like a TV interface.</span></h2>
+    <p>PublivoreTube is built around the remote: big targets, visible focus states, horizontal shelves, and simple navigation. The current Android TV build is already usable, while playback, account features, and polish continue to evolve.</p>
+    <div class="about-points"><span>● Android TV / Google TV</span><span>● D-pad first</span><span>● Open source</span><span>● Official YouTube embedded playback</span></div>
+  </div>
+  <figure class="image-frame about-shot"><img src="screenshots/about.webp" alt="PublivoreTube About screen showing the project creator"></figure>
+</section>
 
 <section id="features" class="section">
   <div class="heading"><div class="eyebrow">WHAT'S INSIDE</div><h2>Made like a TV app,<br><span>not a phone app stretched sideways.</span></h2></div>
@@ -54,12 +63,14 @@
 </section>
 
 <section id="screens" class="section">
-  <div class="heading"><div class="eyebrow">THE CURRENT BUILD</div><h2>Screen-by-screen.</h2><p>The public site uses TV-style sample frames based directly on the current app UI and the screenshots from the Android TV build.</p></div>
+  <div class="heading"><div class="eyebrow">REAL APP SHOTS</div><h2>Exactly what the build looks like.</h2><p>These are the screenshots from the Android TV build supplied for the project — no fake UI mockups.</p></div>
   <div class="screen-grid">
-    <div class="screen-card"><div class="screen home-screen"><div class="mini-side"><b>▰t</b><i class="sel">⌂ Home</i><i>⌕ Search</i><i>▣ Subscription</i><i>▶ Shorts</i><i>◴ History</i></div><div class="mini-main"><h4>Recommended</h4><div class="mini-row"><span></span><span></span><span></span></div><h4>Trending</h4><div class="mini-row second"><span></span><span></span><span></span></div></div></div><b>Home</b><small>Horizontal shelves with strong TV focus styling.</small></div>
-    <div class="screen-card"><div class="screen search-screen"><h4>Search YouTube</h4><div class="searchbox">⌕ &nbsp; Youtube Rewind <button>Search</button></div><div class="kbd"><span>q</span><span>w</span><span>e</span><span>r</span><span>t</span><span>y</span><span>u</span><span>i</span><span>o</span><span>p</span><span>a</span><span>s</span><span>d</span><span>f</span></div></div><b>Search</b><small>TV-friendly input and on-screen keyboard.</small></div>
-    <div class="screen-card"><div class="screen player-screen"><div class="player-video"><span>▶</span></div><div class="player-controls"><i>Play</i><i>Pause</i><i>Channel</i><i>Like</i><i>Playlist</i><i>Captions</i><i>SponsorBlock</i></div></div><b>Player</b><small>Playback controls laid out for the remote.</small></div>
-    <div class="screen-card"><div class="screen settings-screen"><h4>Settings</h4><div class="setting"><b>◉ Account</b><span>No Google account connected</span></div><div class="setting"><b>▶ Playback</b><span>Autoplay · On</span></div><div class="setting"><b>⚙ Captions</b><span>Off</span></div><div class="setting"><b>≋ Video quality</b><span>Auto</span></div></div><b>Settings</b><small>Account, playback and TV accessibility controls.</small></div>
+    <figure class="screen-card"><img src="screenshots/home.webp" alt="PublivoreTube Home screen"><figcaption><b>Home</b><small>Horizontal recommendations, trending and TV-first navigation.</small></figcaption></figure>
+    <figure class="screen-card"><img src="screenshots/search.webp" alt="PublivoreTube Search screen"><figcaption><b>Search</b><small>Remote-friendly search with the Android TV keyboard.</small></figcaption></figure>
+    <figure class="screen-card"><img src="screenshots/results.webp" alt="PublivoreTube Search results"><figcaption><b>Search results</b><small>Large focused video cards and familiar TV browsing.</small></figcaption></figure>
+    <figure class="screen-card"><img src="screenshots/player.webp" alt="PublivoreTube video player"><figcaption><b>Player</b><small>Embedded playback with TV-sized controls and SponsorBlock data.</small></figcaption></figure>
+    <figure class="screen-card"><img src="screenshots/settings.webp" alt="PublivoreTube Settings screen"><figcaption><b>Settings</b><small>Account, playback, captions, quality and position controls.</small></figcaption></figure>
+    <figure class="screen-card"><img src="screenshots/about.webp" alt="PublivoreTube About screen"><figcaption><b>About</b><small>Project information and creator card inside the app.</small></figcaption></figure>
   </div>
 </section>
 
