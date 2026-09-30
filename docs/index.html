@@ -3,20 +3,88 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#08070d">
-  <title>PublivoreTube</title>
+  <meta name="theme-color" content="#090812">
+  <meta name="description" content="PublivoreTube — an open-source, TV-first YouTube client for Android TV and Google TV.">
+  <meta property="og:title" content="PublivoreTube — YouTube, built for the big screen.">
+  <meta property="og:description" content="A remote-first YouTube experience for Android TV and Google TV.">
+  <title>PublivoreTube — YouTube, built for the big screen.</title>
   <link rel="icon" href="assets/publivoretube-icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<main class="gallery">
-  <figure class="shot shot-wide"><img src="screenshots/home.webp" alt=""></figure>
-  <figure class="shot"><img src="screenshots/search.webp" alt=""></figure>
-  <figure class="shot"><img src="screenshots/results.webp" alt=""></figure>
-  <figure class="shot"><img src="screenshots/player.webp" alt=""></figure>
-  <figure class="shot"><img src="screenshots/settings.webp" alt=""></figure>
-  <figure class="shot shot-wide"><img src="screenshots/about.webp" alt=""></figure>
+<header class="header">
+  <a class="brand" href="#top"><img src="assets/publivoretube-icon.svg" alt=""> <span>PublivoreTube</span></a>
+  <nav aria-label="Primary navigation">
+    <a href="#features">Features</a>
+    <a href="#screens">Screenshots</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="https://github.com/Jackson4Rocks/PublivoreTube" target="_blank" rel="noreferrer">GitHub ↗</a>
+  </nav>
+  <a class="small-cta" href="https://github.com/Jackson4Rocks/PublivoreTube/releases" target="_blank" rel="noreferrer">Releases ↗</a>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="hero-copy">
+    <div class="eyebrow"><i></i> Android TV · Open source · D-pad first</div>
+    <h1>YouTube,<br><span>built for the big screen.</span></h1>
+    <p>PublivoreTube is a TV-first YouTube client for Android TV and Google TV — big visuals, clear focus states, horizontal shelves, and an interface designed around the remote.</p>
+    <div class="buttons"><a class="primary" href="https://github.com/Jackson4Rocks/PublivoreTube/releases" target="_blank" rel="noreferrer">Get the build ↗</a><a class="secondary" href="https://github.com/Jackson4Rocks/PublivoreTube" target="_blank" rel="noreferrer">View source ↗</a></div>
+    <div class="chips"><span>API 26+</span><span>Material TV</span><span>Remote-first</span><span>MIT</span></div>
+  </div>
+  <div class="hero-shot">
+    <div class="glow"></div>
+    <figure class="image-frame hero-frame"><img src="screenshots/home.webp" alt="PublivoreTube Home screen on Android TV"></figure>
+  </div>
+</section>
+
+<section class="ticker"><span>HOME SHELVES</span><span>SEARCH</span><span>SHORTS</span><span>CHANNELS</span><span>HISTORY</span><span>SUBSCRIPTIONS</span><span>SPONSORBLOCK</span></section>
+
+<section class="about section">
+  <div class="about-copy">
+    <div class="eyebrow">THE APP</div>
+    <h2>A TV interface that actually <span>feels like a TV interface.</span></h2>
+    <p>PublivoreTube is built around the remote: big targets, visible focus states, horizontal shelves, and simple navigation. The current Android TV build is already usable, while playback, account features, and polish continue to evolve.</p>
+    <div class="about-points"><span>● Android TV / Google TV</span><span>● D-pad first</span><span>● Open source</span><span>● Official YouTube embedded playback</span></div>
+  </div>
+  <figure class="image-frame about-shot"><img src="screenshots/about.webp" alt="PublivoreTube About screen showing the project creator"></figure>
+</section>
+
+<section id="features" class="section">
+  <div class="heading"><div class="eyebrow">WHAT'S INSIDE</div><h2>Made like a TV app,<br><span>not a phone app stretched sideways.</span></h2></div>
+  <div class="grid">
+    <article><strong>◈</strong><h3>Remote-first navigation</h3><p>Large targets, obvious focus states, horizontal shelves, and a layout made for a D-pad.</p></article>
+    <article><strong>▶</strong><h3>In-app playback</h3><p>Open videos inside PublivoreTube using the official embedded YouTube player experience.</p></article>
+    <article><strong>◉</strong><h3>TV Shorts</h3><p>A dedicated Shorts viewer with remote controls for moving through the feed.</p></article>
+    <article><strong>▦</strong><h3>Channel pages</h3><p>Explore channel artwork, stats, videos, playlists, and available YouTube shelves.</p></article>
+    <article><strong>↺</strong><h3>Local history</h3><p>Keep recently watched videos close at hand without needing to sign in.</p></article>
+    <article><strong>◎</strong><h3>Account-aware</h3><p>Optional Google sign-in for subscriptions, ratings, playlists, and more.</p></article>
+  </div>
+</section>
+
+<section id="screens" class="section">
+  <div class="heading"><div class="eyebrow">REAL APP SHOTS</div><h2>Exactly what the build looks like.</h2><p>These are the screenshots from the Android TV build supplied for the project — no fake UI mockups.</p></div>
+  <div class="screen-grid">
+    <figure class="screen-card"><img src="screenshots/home.webp" alt="PublivoreTube Home screen"><figcaption><b>Home</b><small>Horizontal recommendations, trending and TV-first navigation.</small></figcaption></figure>
+    <figure class="screen-card"><img src="screenshots/search.webp" alt="PublivoreTube Search screen"><figcaption><b>Search</b><small>Remote-friendly search with the Android TV keyboard.</small></figcaption></figure>
+    <figure class="screen-card"><img src="screenshots/results.webp" alt="PublivoreTube Search results"><figcaption><b>Search results</b><small>Large focused video cards and familiar TV browsing.</small></figcaption></figure>
+    <figure class="screen-card"><img src="screenshots/player.webp" alt="PublivoreTube video player"><figcaption><b>Player</b><small>Embedded playback with TV-sized controls and SponsorBlock data.</small></figcaption></figure>
+    <figure class="screen-card"><img src="screenshots/settings.webp" alt="PublivoreTube Settings screen"><figcaption><b>Settings</b><small>Account, playback, captions, quality and position controls.</small></figcaption></figure>
+    <figure class="screen-card"><img src="screenshots/about.webp" alt="PublivoreTube About screen"><figcaption><b>About</b><small>Project information and creator card inside the app.</small></figcaption></figure>
+  </div>
+</section>
+
+<section class="split">
+  <div><div class="eyebrow">CURRENT STATUS</div><h2>Early, usable,<br><span>still evolving.</span></h2><p>The core TV experience is in place while playback UX, account features, polish, and edge cases continue to improve.</p><div class="status"><span>● TV-first home and navigation</span><span>● YouTube search and playback</span><span>● Shorts viewer</span><span>● Channel pages and shelves</span><span>● Local history and settings</span><span>◐ More account + playback polish</span></div></div>
+  <aside><small>A NOTE ON SPONSORBLOCK</small><h3>Segment data, not playback modification.</h3><p>The current build can retrieve and display SponsorBlock segment information. It does not automatically alter standard YouTube playback.</p><a href="https://github.com/Jackson4Rocks/PublivoreTube" target="_blank" rel="noreferrer">Read the implementation →</a></aside>
+</section>
+
+<section id="roadmap" class="section roadmap"><div class="heading"><div class="eyebrow">ROADMAP</div><h2>What comes next.</h2></div><div class="road"><article><span>01</span><div><h3>Refine the TV experience</h3><p>Smoother transitions, stronger focus behavior, and continued visual polish.</p></div></article><article><span>02</span><div><h3>Expand account features</h3><p>More complete subscriptions, ratings, playlists, and account-aware flows.</p></div></article><article><span>03</span><div><h3>Improve playback UX</h3><p>Better controls around the official player and stronger error handling.</p></div></article></div></section>
+
+<section class="cta"><img src="assets/publivoretube-icon.svg" alt=""><div><div class="eyebrow">OPEN SOURCE</div><h2>Made for the couch.</h2><p>Explore the code, try the current build, report bugs, or contribute.</p></div><div class="cta-buttons"><a class="primary" href="https://github.com/Jackson4Rocks/PublivoreTube/releases" target="_blank" rel="noreferrer">Releases ↗</a><a class="secondary" href="https://github.com/Jackson4Rocks/PublivoreTube/issues" target="_blank" rel="noreferrer">Issues ↗</a></div></section>
 </main>
+
+<footer><span><b>PublivoreTube</b> · YouTube, built for the big screen.</span><span>© 2026 Leon Sony · MIT License</span></footer>
 <script src="script.js"></script>
 </body>
 </html>
