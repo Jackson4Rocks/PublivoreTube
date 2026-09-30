@@ -243,7 +243,7 @@ class YoutubeDataApi(
             }
             .sortedBy { it.first.first }
 
-        buildList {
+        val shelves = buildList {
             for ((metadata, sectionTitleRaw) in sections) {
                 val (position, type, details) = metadata
                 val sectionTitle = cleanText(
@@ -312,8 +312,14 @@ class YoutubeDataApi(
                             .take(maxPlaylistsPerSection)
 
                         val rows = playlistIds.mapNotNull { playlistId ->
-                            val playlistTitle = playlistTitle(playlistId)
-                            val videos = playlistVideos(playlistId, maxVideosPerShelf)
+                            val playlistTitle = runCatching {
+                                playlistTitle(playlistId)
+                            }.getOrElse { "" }
+
+                            val videos = runCatching {
+                                playlistVideos(playlistId, maxVideosPerShelf)
+                            }.getOrElse { emptyList() }
+
                             if (videos.isEmpty()) {
                                 null
                             } else {
@@ -340,7 +346,10 @@ class YoutubeDataApi(
                     "allPlaylists" -> {
                         val playlistRows = channelPlaylists(channelId, maxPlaylistsPerSection)
                             .mapNotNull { playlist ->
-                                val videos = playlistVideos(playlist.first, maxVideosPerShelf)
+                                val videos = runCatching {
+                                    playlistVideos(playlist.first, maxVideosPerShelf)
+                                }.getOrElse { emptyList() }
+
                                 if (videos.isEmpty()) {
                                     null
                                 } else {
@@ -366,6 +375,34 @@ class YoutubeDataApi(
                 }
             }
         }.sortedBy { it.position }
+
+        if (shelves.isNotEmpty()) {
+            shelves
+        } else {
+            val fallbackVideos = channelVideos(
+                channelId = channelId,
+                maxResults = maxVideosPerShelf,
+                order = "date",
+            )
+
+            if (fallbackVideos.isEmpty()) {
+                emptyList()
+            } else {
+                listOf(
+                    ChannelShelf(
+                        position = 0,
+                        title = "Latest videos",
+                        type = "fallbackUploads",
+                        rows = listOf(
+                            ChannelShelfRow(
+                                title = "Latest videos",
+                                videos = fallbackVideos,
+                            ),
+                        ),
+                    ),
+                )
+            }
+        }
     }
 
     private suspend fun playlistTitle(playlistId: String): String {
