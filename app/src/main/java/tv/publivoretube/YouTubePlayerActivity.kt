@@ -412,7 +412,7 @@ class YouTubePlayerActivity : ComponentActivity() {
             append("frameborder='0' allow='autoplay; encrypted-media; picture-in-picture' allowfullscreen></iframe>")
             append("<script>")
             append("var player=null;")
-            append("function onYouTubeIframeAPIReady(){if(!player)player=new YT.Player('player');}")
+            append("function onYouTubeIframeAPIReady(){if(!player){player=new YT.Player('player',{events:{onReady:function(e){e.target.setVolume(100);e.target.unMute();}}});}}")
             append("var tag=document.createElement('script');")
             append("tag.src='https://www.youtube.com/iframe_api';")
             append("document.head.appendChild(tag);")
