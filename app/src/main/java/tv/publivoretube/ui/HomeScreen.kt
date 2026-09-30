@@ -194,7 +194,8 @@ private fun NavigationRail(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            NavDestinations.forEachIndexed { index, destination ->
+            for (index in NavDestinations.indices) {
+                val destination = NavDestinations[index]
                 NavigationItem(
                     destination = destination,
                     selected = selected == index,
