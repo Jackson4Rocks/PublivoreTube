@@ -40,6 +40,7 @@ class YoutubeDataApi(
                         id = id,
                         title = cleanText(snippet.optString("title")),
                         channel = cleanText(snippet.optString("channelTitle")),
+                        channelId = snippet.optString("channelId").takeIf(String::isNotBlank),
                         duration = item.optJSONObject("contentDetails")
                             ?.optString("duration")
                             ?.let(::formatDuration)
@@ -126,6 +127,7 @@ class YoutubeDataApi(
                         id = id,
                         title = cleanText(snippet.optString("title")),
                         channel = cleanText(snippet.optString("channelTitle")),
+                        channelId = snippet.optString("channelId").takeIf(String::isNotBlank),
                         duration = details
                             ?.optJSONObject("contentDetails")
                             ?.optString("duration")
