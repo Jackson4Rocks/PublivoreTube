@@ -324,7 +324,7 @@ class YouTubePlayerActivity : ComponentActivity() {
                     }
                     1 -> {
                         val qualities = arrayOf("Auto", "720p", "1080p")
-                        androidx.appcompat.app.AlertDialog.Builder(this)
+                        android.app.AlertDialog.Builder(this)
                             .setTitle("Preferred quality")
                             .setItems(qualities) { _, index ->
                                 prefs.quality = qualities[index]
@@ -399,22 +399,26 @@ class YouTubePlayerActivity : ComponentActivity() {
 
         return buildString {
             append("<!doctype html><html><head>")
-            append("<meta name="viewport" content="width=device-width,initial-scale=1.0">")
-            append("<style>html,body{margin:0;padding:0;width:100%;height:100%;background:#000;overflow:hidden}")
-            append("#player{width:100%;height:100%;border:0;display:block}</style></head><body>")
-            append("<iframe id="player" width="100%" height="100%" ")
-            append("src="https://www.youtube.com/embed/")
+            append("<meta name='viewport' content='width=device-width,initial-scale=1.0'>")
+            append("<style>")
+            append("html,body{margin:0;padding:0;width:100%;height:100%;background:#000;overflow:hidden;}")
+            append("#player{width:100%;height:100%;border:0;display:block;}")
+            append("</style></head><body>")
+            append("<iframe id='player' width='100%' height='100%' ")
+            append("src='https://www.youtube.com/embed/")
             append(safeId)
             append("?enablejsapi=1&autoplay=1&controls=1&playsinline=1&rel=0&fs=1")
-            append("&origin=https%3A%2F%2Ftv.publivoretube" ")
-            append("frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>")
+            append("&origin=https%3A%2F%2Ftv.publivoretube' ")
+            append("frameborder='0' allow='autoplay; encrypted-media; picture-in-picture' allowfullscreen></iframe>")
             append("<script>")
             append("var player=null;")
             append("function onYouTubeIframeAPIReady(){if(!player)player=new YT.Player('player');}")
-            append("var tag=document.createElement('script');tag.src='https://www.youtube.com/iframe_api';document.head.appendChild(tag);")
+            append("var tag=document.createElement('script');")
+            append("tag.src='https://www.youtube.com/iframe_api';")
+            append("document.head.appendChild(tag);")
             append("window.ptPlay=function(){if(player)player.playVideo();};")
             append("window.ptPause=function(){if(player)player.pauseVideo();};")
-            append("window.ptCaptions=function(){if(!player)return;player.loadModule('captions');};")
+            append("window.ptCaptions=function(){if(player)player.loadModule('captions');};")
             append("</script></body></html>")
         }
     }
