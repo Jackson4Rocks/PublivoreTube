@@ -74,6 +74,17 @@ private val AccentStrong = Color(0xFFC59BFF)
 private val TextMuted = Color(0xFFB9B2C5)
 private val PillShape = RoundedCornerShape(50.dp)
 
+private val TvPillButtonColors = ButtonDefaults.colors(
+    containerColor = Color(0xFF24202D),
+    contentColor = Color.White,
+    focusedContainerColor = AccentStrong,
+    focusedContentColor = Canvas,
+    pressedContainerColor = AccentStrong,
+    pressedContentColor = Canvas,
+    disabledContainerColor = Color(0xFF17141D),
+    disabledContentColor = TextMuted,
+)
+
 private data class NavDestination(
     val icon: ImageVector,
     val label: String,
@@ -205,6 +216,7 @@ private fun NavigationItem(
     Button(
         onClick = onClick,
         shape = ButtonDefaults.shape(PillShape),
+        colors = TvPillButtonColors,
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
@@ -340,6 +352,7 @@ private fun TopBar(onSearch: () -> Unit) {
         Button(
             onClick = onSearch,
             shape = ButtonDefaults.shape(PillShape),
+        colors = TvPillButtonColors,
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
         ) {
             Row(
@@ -417,6 +430,7 @@ private fun HeroBanner(
                 Button(
                     onClick = onClick,
                     shape = ButtonDefaults.shape(PillShape),
+        colors = TvPillButtonColors,
                     contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
                 ) {
                     Row(
@@ -639,6 +653,7 @@ private fun SearchScreen(
             Button(
                 onClick = { onSearch(query) },
                 shape = ButtonDefaults.shape(PillShape),
+        colors = TvPillButtonColors,
                 contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
             ) {
                 Row(
@@ -841,6 +856,7 @@ private fun AboutScreen() {
                             )
                         },
                         shape = ButtonDefaults.shape(PillShape),
+        colors = TvPillButtonColors,
                         contentPadding = PaddingValues(horizontal = 18.dp, vertical = 12.dp),
                     ) {
                         Row(
