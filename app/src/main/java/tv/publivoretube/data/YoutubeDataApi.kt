@@ -4,6 +4,8 @@ import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 class YoutubeDataApi(
@@ -12,18 +14,19 @@ class YoutubeDataApi(
     val isConfigured: Boolean
         get() = apiKey.isNotBlank()
 
-    suspend fun mostPopular(regionCode: String = "IN", maxResults: Int = 12): List<Video> {
-        requireConfigured()
-        val url = baseUrl + "/videos?part=snippet,contentDetails,statistics" +
-            "&chart=mostPopular" +
-            "&regionCode=" + encode(regionCode) +
-            "&maxResults=" + maxResults +
-            "&key=" + encode(apiKey)
+    suspend fun mostPopular(regionCode: String = "IN", maxResults: Int = 12): List<Video> =
+        withContext(Dispatchers.IO) {
+            requireConfigured()
+            val url = baseUrl + "/videos?part=snippet,contentDetails,statistics" +
+                "&chart=mostPopular" +
+                "&regionCode=" + encode(regionCode) +
+                "&maxResults=" + maxResults +
+                "&key=" + encode(apiKey)
 
-        val json = get(url)
-        val items = json.getJSONArray("items")
+            val json = get(url)
+            val items = json.getJSONArray("items")
 
-        return buildList {
+            buildList {
             for (index in 0 until items.length()) {
                 val item = items.getJSONObject(index)
                 val snippet = item.getJSONObject("snippet")
@@ -42,14 +45,15 @@ class YoutubeDataApi(
                     ),
                 )
             }
+            }
         }
-    }
 
-    suspend fun search(query: String, maxResults: Int = 18): List<Video> {
-        requireConfigured()
-        if (query.isBlank()) return emptyList()
+    suspend fun search(query: String, maxResults: Int = 18): List<Video> =
+        withContext(Dispatchers.IO) {
+            requireConfigured()
+            if (query.isBlank()) return@withContext emptyList()
 
-        val searchUrl = baseUrl + "/search?part=snippet" +
+            val searchUrl = baseUrl + "/search?part=snippet" +
             "&type=video" +
             "&q=" + encode(query.trim()) +
             "&maxResults=" + maxResults +
@@ -104,8 +108,8 @@ class YoutubeDataApi(
                     ),
                 )
             }
+            }
         }
-    }
 
     private fun get(urlString: String): JSONObject {
         val connection = (URL(urlString).openConnection() as HttpURLConnection).apply {
