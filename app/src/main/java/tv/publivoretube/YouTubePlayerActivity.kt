@@ -18,6 +18,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import tv.publivoretube.data.AppPreferences
+import tv.publivoretube.data.SponsorBlockApi
+import tv.publivoretube.data.SponsorSegment
+import kotlin.concurrent.thread
 
 class YouTubePlayerActivity : ComponentActivity() {
     private lateinit var webView: WebView
@@ -205,6 +208,9 @@ class YouTubePlayerActivity : ComponentActivity() {
             runPlayerCommand("ptCaptions")
             updateStatus("Captions toggled. Use YouTube's language controls if needed.")
         })
+        actionRow.addView(tvButton("SponsorBlock") {
+            loadSponsorSegments()
+        })
         actionRow.addView(tvButton("Settings") {
             showPlayerSettings()
         })
@@ -351,6 +357,90 @@ class YouTubePlayerActivity : ComponentActivity() {
     private fun updateStatus(message: String) {
         statusText?.post {
             statusText?.text = message
+        }
+    }
+
+    private fun loadSponsorSegments() {
+        if (videoId.isBlank()) {
+            Toast.makeText(this, "SponsorBlock is unavailable for this video.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        updateStatus("Checking SponsorBlock…")
+
+        thread(name = "sponsorblock") {
+            try {
+                val segments = SponsorBlockApi().fetchSegments(videoId)
+                runOnUiThread {
+                    if (segments.isEmpty()) {
+                        updateStatus("SponsorBlock: no submitted segments found.")
+                    } else {
+                        updateStatus(
+                            "SponsorBlock: " + segments.size + " segment" +
+                                if (segments.size == 1) "" else "s" + " found.",
+                        )
+                    }
+                    showSponsorSegments(segments)
+                }
+            } catch (error: Throwable) {
+                runOnUiThread {
+                    updateStatus("SponsorBlock unavailable right now.")
+                    Toast.makeText(
+                        this,
+                        "SponsorBlock could not be reached: " +
+                            (error.message ?: "network error"),
+                        Toast.LENGTH_LONG,
+                    ).show()
+                }
+            }
+        }
+    }
+
+    private fun showSponsorSegments(segments: List<SponsorSegment>) {
+        if (segments.isEmpty()) {
+            android.app.AlertDialog.Builder(this)
+                .setTitle("SponsorBlock")
+                .setMessage(
+                    "No submitted SponsorBlock segments were found for this video.\n\n" +
+                        "SponsorBlock data is provided by sponsor.ajay.app.",
+                )
+                .setPositiveButton("Close", null)
+                .show()
+            return
+        }
+
+        val labels = segments.mapIndexed { index, segment ->
+            val range =
+                formatTimestamp(segment.startSeconds) + " → " +
+                    formatTimestamp(segment.endSeconds)
+            val category = segment.category
+                .replace('_', ' ')
+                .replaceFirstChar { it.uppercase() }
+
+            (index + 1).toString() + ". " + category + "  •  " + range
+        }.toTypedArray()
+
+        android.app.AlertDialog.Builder(this)
+            .setTitle("SponsorBlock • " + segments.size + " segments")
+            .setItems(labels, null)
+            .setPositiveButton("Close", null)
+            .setMessage(
+                "These are crowdsourced segment markers. " +
+                    "PublivoreTube does not alter the embedded YouTube player.",
+            )
+            .show()
+    }
+
+    private fun formatTimestamp(seconds: Double): String {
+        val total = seconds.toLong().coerceAtLeast(0L)
+        val hours = total / 3_600
+        val minutes = (total % 3_600) / 60
+        val secs = total % 60
+
+        return if (hours > 0) {
+            "%d:%02d:%02d".format(hours, minutes, secs)
+        } else {
+            "%d:%02d".format(minutes, secs)
         }
     }
 
