@@ -292,10 +292,9 @@ class YouTubePlayerActivity : ComponentActivity() {
             return
         }
         startActivity(
-            Intent(
-                Intent.ACTION_VIEW,
-                Uri.parse("https://www.youtube.com/channel/" + id),
-            ),
+            Intent(this, ChannelActivity::class.java).apply {
+                putExtra(ChannelActivity.EXTRA_CHANNEL_ID, id)
+            },
         )
     }
 
