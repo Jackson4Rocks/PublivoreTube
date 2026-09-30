@@ -1,9 +1,12 @@
 package tv.publivoretube.data
 
+import android.util.Log
+
 interface VideoRepository {
     suspend fun home(): List<Video>
     suspend fun search(query: String): List<Video>
     val isRemoteConfigured: Boolean
+    val lastError: String?
 }
 
 class YoutubeVideoRepository(
@@ -13,17 +16,35 @@ class YoutubeVideoRepository(
     override val isRemoteConfigured: Boolean
         get() = api.isConfigured
 
+    override var lastError: String? = null
+        private set
+
     override suspend fun home(): List<Video> =
         runCatching { api.mostPopular() }
-            .getOrElse { fallback.homeStatic() }
+            .onSuccess { lastError = null }
+            .getOrElse { error ->
+                lastError = error.message ?: "Unknown YouTube API error."
+                Log.e(TAG, "YouTube home request failed: " + lastError, error)
+                fallback.homeStatic()
+            }
 
     override suspend fun search(query: String): List<Video> =
         runCatching { api.search(query) }
-            .getOrElse { fallback.search(query) }
+            .onSuccess { lastError = null }
+            .getOrElse { error ->
+                lastError = error.message ?: "Unknown YouTube API error."
+                Log.e(TAG, "YouTube search request failed: " + lastError, error)
+                fallback.search(query)
+            }
+
+    private companion object {
+        const val TAG = "PublivoreTubeAPI"
+    }
 }
 
 class DemoVideoRepository : VideoRepository {
     override val isRemoteConfigured: Boolean = false
+    override val lastError: String? = null
 
     override suspend fun home(): List<Video> = homeStatic()
 
