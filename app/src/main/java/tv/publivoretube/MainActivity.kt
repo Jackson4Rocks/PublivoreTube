@@ -73,8 +73,10 @@ private fun PublivoreTubeApp(
     var searchResults by remember { mutableStateOf(emptyList<Video>()) }
     var historyVideos by remember { mutableStateOf(historyStore.load()) }
     var subscriptions by remember { mutableStateOf(emptyList<Subscription>()) }
+    var shortsVideos by remember { mutableStateOf(emptyList<Video>()) }
 
     var homeLoading by remember { mutableStateOf(true) }
+    var shortsLoading by remember { mutableStateOf(false) }
     var searchLoading by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     var statusMessage by remember { mutableStateOf<String?>(null) }
@@ -128,6 +130,14 @@ private fun PublivoreTubeApp(
         homeVideos = repository.home()
         homeLoading = false
 
+        if (repository.isRemoteConfigured) {
+            shortsLoading = true
+            shortsVideos = repository.shorts()
+            shortsLoading = false
+        } else {
+            shortsVideos = repository.shorts()
+        }
+
         statusMessage = when {
             !repository.isRemoteConfigured ->
                 "Demo feed active — add YOUTUBE_API_KEY for live YouTube data."
@@ -152,6 +162,8 @@ private fun PublivoreTubeApp(
         statusMessage = statusMessage,
         historyVideos = historyVideos,
         subscriptions = subscriptions,
+        shortsVideos = shortsVideos,
+        shortsLoading = shortsLoading,
         signedIn = signedIn,
         account = account,
         oauthConfigured = authManager.isConfigured,
