@@ -467,88 +467,39 @@ private fun ActionButton(
     }
 }
 private fun playerHtml(videoId: String): String {
-    val safeId = videoId
-        .replace("&", "")
-        .replace(""", "")
-        .replace("'", "")
-        .replace("<", "")
-        .replace(">", "")
+    val safeId = videoId.filter { it.isLetterOrDigit() || it == '-' || it == '_' }
 
-    return """
-        <!doctype html>
-        <html>
-        <head>
-          <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-          <style>
-            html, body {
-              margin: 0;
-              padding: 0;
-              width: 100%;
-              height: 100%;
-              background: #000;
-              overflow: hidden;
-            }
-
-            #player {
-              display: block;
-              width: 100%;
-              height: 100%;
-              border: 0;
-            }
-          </style>
-        </head>
-        <body>
-          <iframe
-            id="player"
-            title="YouTube video"
-            type="text/html"
-            width="100%"
-            height="100%"
-            src="https://www.youtube.com/embed/$safeId?enablejsapi=1&autoplay=1&controls=1&playsinline=1&rel=0&fs=1&origin=https%3A%2F%2Ftv.publivoretube"
-            frameborder="0"
-            allow="autoplay; encrypted-media; picture-in-picture"
-            allowfullscreen>
-          </iframe>
-
-          <script>
-            var player = null;
-
-            function onYouTubeIframeAPIReady() {
-              window.ptBindPlayer();
-            }
-
-            window.ptBindPlayer = function() {
-              if (player || !window.YT || !YT.Player) return;
-              player = new YT.Player('player');
-            };
-
-            var tag = document.createElement('script');
-            tag.src = 'https://www.youtube.com/iframe_api';
-            document.head.appendChild(tag);
-
-            window.ptPlay = function() {
-              if (player) player.playVideo();
-            };
-
-            window.ptPause = function() {
-              if (player) player.pauseVideo();
-            };
-
-            window.ptCaptions = function(enabled) {
-              if (!player) return;
-              if (enabled) {
-                player.loadModule('captions');
-                player.setOption(
-                  'captions',
-                  'track',
-                  {'languageCode': 'en'}
-                );
-              } else {
-                player.unloadModule('captions');
-              }
-            };
-          </script>
-        </body>
-        </html>
-    """.trimIndent()
+    return buildString {
+        append("<!doctype html>")
+        append("<html><head>")
+        append("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, viewport-fit=cover\">")
+        append("<style>")
+        append("html,body{margin:0;padding:0;width:100%;height:100%;background:#000;overflow:hidden;}")
+        append("#player{display:block;width:100%;height:100%;border:0;}")
+        append("</style></head><body>")
+        append("<iframe id=\"player\" title=\"YouTube video\" type=\"text/html\" ")
+        append("width=\"100%\" height=\"100%\" ")
+        append("src=\"https://www.youtube.com/embed/")
+        append(safeId)
+        append("?enablejsapi=1&autoplay=1&controls=1&playsinline=1&rel=0&fs=1&origin=https%3A%2F%2Ftv.publivoretube\" ")
+        append("frameborder=\"0\" allow=\"autoplay; encrypted-media; picture-in-picture\" allowfullscreen></iframe>")
+        append("<script>")
+        append("var player=null;")
+        append("function onYouTubeIframeAPIReady(){window.ptBindPlayer();}")
+        append("window.ptBindPlayer=function(){")
+        append("if(player||!window.YT||!YT.Player)return;")
+        append("player=new YT.Player('player');")
+        append("};")
+        append("var tag=document.createElement('script');")
+        append("tag.src='https://www.youtube.com/iframe_api';")
+        append("document.head.appendChild(tag);")
+        append("window.ptPlay=function(){if(player)player.playVideo();};")
+        append("window.ptPause=function(){if(player)player.pauseVideo();};")
+        append("window.ptCaptions=function(enabled){")
+        append("if(!player)return;")
+        append("if(enabled){player.loadModule('captions');player.setOption('captions','track',{languageCode:'en'});}")
+        append("else{player.unloadModule('captions');}")
+        append("};")
+        append("</script></body></html>")
+    }
 }
