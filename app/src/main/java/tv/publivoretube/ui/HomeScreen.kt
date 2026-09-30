@@ -155,7 +155,7 @@ private fun NavigationRail(
                 colors = SurfaceDefaults.colors(containerColor = CardSurface),
             ) {
                 Image(
-                    painter = painterResource(R.drawable.ic_publivoretube),
+                    painter = painterResource(R.drawable.ic_publivoretube_mark),
                     contentDescription = "PublivoreTube",
                     modifier = Modifier.padding(6.dp),
                 )
@@ -752,7 +752,7 @@ private fun AboutScreen() {
                         colors = SurfaceDefaults.colors(containerColor = Color(0xFF281840)),
                     ) {
                         Image(
-                            painter = painterResource(R.drawable.ic_publivoretube),
+                            painter = painterResource(R.drawable.ic_publivoretube_mark),
                             contentDescription = null,
                             modifier = Modifier.padding(5.dp),
                         )
