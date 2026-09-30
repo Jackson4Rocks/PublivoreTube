@@ -5,6 +5,9 @@ import android.util.Log
 interface VideoRepository {
     suspend fun home(): List<Video>
     suspend fun search(query: String): List<Video>
+    suspend fun shorts(): List<Video>
+    suspend fun channelInfo(channelId: String): ChannelInfo
+    suspend fun channelVideos(channelId: String): List<Video>
     val isRemoteConfigured: Boolean
     val lastError: String?
 }
@@ -37,6 +40,22 @@ class YoutubeVideoRepository(
                 fallback.search(query)
             }
 
+    
+    override suspend fun shorts(): List<Video> =
+        runCatching { api.shorts() }
+            .onSuccess { lastError = null }
+            .getOrElse { error ->
+                lastError = error.message ?: "Unknown YouTube API error."
+                Log.e(TAG, "YouTube Shorts request failed: " + lastError, error)
+                emptyList()
+            }
+
+    override suspend fun channelInfo(channelId: String): ChannelInfo =
+        api.channelInfo(channelId)
+
+    override suspend fun channelVideos(channelId: String): List<Video> =
+        api.channelVideos(channelId)
+
     private companion object {
         const val TAG = "PublivoreTubeAPI"
     }
@@ -52,6 +71,16 @@ class DemoVideoRepository : VideoRepository {
         it.title.contains(query, ignoreCase = true) ||
             it.channel.contains(query, ignoreCase = true)
     }
+
+    override suspend fun shorts(): List<Video> = homeStatic().take(4).map {
+        it.copy(duration = if (it.id.hashCode() % 2 == 0) "0:42" else "1:05")
+    }
+
+    override suspend fun channelInfo(channelId: String): ChannelInfo =
+        ChannelInfo(channelId, "PublivoreTube Demo Channel", "Demo channel for offline mode.", null, "—", "6")
+
+    override suspend fun channelVideos(channelId: String): List<Video> =
+        homeStatic()
 
     fun homeStatic(): List<Video> = listOf(
         Video("demo-1", "PublivoreTube — First Look", "PublivoreTube", "08:42"),
