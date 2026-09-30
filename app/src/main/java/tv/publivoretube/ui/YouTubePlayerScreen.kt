@@ -100,15 +100,55 @@ fun YouTubePlayerScreen(
             CookieManager.getInstance().setAcceptCookie(true)
             CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
 
-            webViewClient = WebViewClient()
+            webViewClient = object : WebViewClient() {
+                override fun onPageFinished(view: WebView?, url: String?) {
+                    super.onPageFinished(view, url)
+                    view?.evaluateJavascript(
+                        "window.ptBindPlayer && window.ptBindPlayer();",
+                        null,
+                    )
+                }
+
+                override fun onReceivedError(
+                    view: WebView?,
+                    request: android.webkit.WebResourceRequest?,
+                    error: android.webkit.WebResourceError?,
+                ) {
+                    super.onReceivedError(view, request, error)
+                    if (request?.isForMainFrame == true) {
+                        statusMessage = "YouTube player failed to load. Check the device internet connection."
+                    }
+                }
+
+                override fun onReceivedHttpError(
+                    view: WebView?,
+                    request: android.webkit.WebResourceRequest?,
+                    errorResponse: android.webkit.WebResourceResponse?,
+                ) {
+                    super.onReceivedHttpError(view, request, errorResponse)
+                    if (request?.isForMainFrame == true &&
+                        errorResponse?.statusCode ?: 200 >= 400
+                    ) {
+                        statusMessage = "YouTube player returned HTTP " +
+                            (errorResponse?.statusCode ?: 0) + "."
+                    }
+                }
+            }
             webChromeClient = WebChromeClient()
 
-            loadDataWithBaseURL(
-                "https://www.youtube.com/",
-                playerHtml(videoId),
-                "text/html",
-                "UTF-8",
-                "https://www.youtube.com/",
+            val embedUrl =
+                "https://www.youtube.com/embed/$videoId" +
+                    "?enablejsapi=1" +
+                    "&autoplay=1" +
+                    "&controls=1" +
+                    "&playsinline=1" +
+                    "&rel=0" +
+                    "&fs=1" +
+                    "&origin=https%3A%2F%2Ftv.publivoretube"
+
+            loadUrl(
+                embedUrl,
+                mapOf("Referer" to "https://tv.publivoretube/"),
             )
         }
     }
@@ -433,11 +473,10 @@ private fun ActionButton(
         }
     }
 }
-
 private fun playerHtml(videoId: String): String {
     val safeId = videoId
         .replace("&", "")
-        .replace("\"", "")
+        .replace(""", "")
         .replace("'", "")
         .replace("<", "")
         .replace(">", "")
@@ -456,38 +495,43 @@ private fun playerHtml(videoId: String): String {
               background: #000;
               overflow: hidden;
             }
+
             #player {
+              display: block;
               width: 100%;
               height: 100%;
+              border: 0;
             }
           </style>
         </head>
         <body>
-          <div id="player"></div>
+          <iframe
+            id="player"
+            title="YouTube video"
+            type="text/html"
+            width="100%"
+            height="100%"
+            src="https://www.youtube.com/embed/$safeId?enablejsapi=1&autoplay=1&controls=1&playsinline=1&rel=0&fs=1&origin=https%3A%2F%2Ftv.publivoretube"
+            frameborder="0"
+            allow="autoplay; encrypted-media; picture-in-picture"
+            allowfullscreen>
+          </iframe>
 
           <script>
-            var tag = document.createElement('script');
-            tag.src = 'https://www.youtube.com/iframe_api';
-            document.head.appendChild(tag);
-
             var player = null;
 
             function onYouTubeIframeAPIReady() {
-              player = new YT.Player('player', {
-                width: '100%',
-                height: '100%',
-                videoId: '$safeId',
-                playerVars: {
-                  autoplay: 1,
-                  controls: 1,
-                  enablejsapi: 1,
-                  fs: 1,
-                  playsinline: 1,
-                  rel: 0,
-                  origin: 'https://www.youtube.com'
-                }
-              });
+              window.ptBindPlayer();
             }
+
+            window.ptBindPlayer = function() {
+              if (player || !window.YT || !YT.Player) return;
+              player = new YT.Player('player');
+            };
+
+            var tag = document.createElement('script');
+            tag.src = 'https://www.youtube.com/iframe_api';
+            document.head.appendChild(tag);
 
             window.ptPlay = function() {
               if (player) player.playVideo();
@@ -501,7 +545,11 @@ private fun playerHtml(videoId: String): String {
               if (!player) return;
               if (enabled) {
                 player.loadModule('captions');
-                player.setOption('captions', 'track', {'languageCode': 'en'});
+                player.setOption(
+                  'captions',
+                  'track',
+                  {'languageCode': 'en'}
+                );
               } else {
                 player.unloadModule('captions');
               }
