@@ -1,6 +1,7 @@
 package tv.publivoretube.ui
 
 import android.graphics.Color as AndroidColor
+import android.webkit.CookieManager
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -67,18 +68,19 @@ fun YouTubePlayerScreen(
             settings.domStorageEnabled = true
             settings.mediaPlaybackRequiresUserGesture = false
             settings.loadsImagesAutomatically = true
+            settings.allowContentAccess = true
+            settings.allowFileAccess = false
             settings.userAgentString =
                 settings.userAgentString + " PublivoreTube/0.1 AndroidTV"
+
+            CookieManager.getInstance().setAcceptCookie(true)
+            CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
 
             webViewClient = WebViewClient()
             webChromeClient = WebChromeClient()
 
-            loadDataWithBaseURL(
-                "https://www.youtube.com/",
-                playerHtml(videoId),
-                "text/html",
-                "UTF-8",
-                null,
+            loadUrl(
+                "https://www.youtube.com/embed/$videoId?autoplay=1&controls=1&playsinline=1&rel=0&fs=1",
             )
         }
     }
@@ -199,62 +201,4 @@ fun YouTubePlayerScreen(
             }
         }
     }
-}
-
-private fun playerHtml(videoId: String): String {
-    val safeId = videoId
-        .replace("&", "")
-        .replace("\"", "")
-        .replace("'", "")
-        .replace("<", "")
-        .replace(">", "")
-
-    return """
-        <!doctype html>
-        <html>
-        <head>
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <style>
-            html, body {
-              margin: 0;
-              padding: 0;
-              width: 100%;
-              height: 100%;
-              background: #000;
-              overflow: hidden;
-            }
-
-            #player {
-              width: 100%;
-              height: 100%;
-            }
-          </style>
-        </head>
-        <body>
-          <div id="player"></div>
-
-          <script>
-            var tag = document.createElement('script');
-            tag.src = 'https://www.youtube.com/iframe_api';
-            document.head.appendChild(tag);
-
-            function onYouTubeIframeAPIReady() {
-              new YT.Player('player', {
-                width: '100%',
-                height: '100%',
-                videoId: '$safeId',
-                playerVars: {
-                  autoplay: 1,
-                  controls: 1,
-                  enablejsapi: 1,
-                  fs: 1,
-                  playsinline: 1,
-                  rel: 0
-                }
-              });
-            }
-          </script>
-        </body>
-        </html>
-    """.trimIndent()
 }
