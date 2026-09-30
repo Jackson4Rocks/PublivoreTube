@@ -65,15 +65,13 @@ private fun PublivoreTubeApp(
         }
     }
 
-    activeVideo?.let { video ->
+    if (activeVideo != null) {
         PlaybackScreen(
-            video = video,
+            video = activeVideo!!,
             onBack = { activeVideo = null },
         )
-        return
-    }
-
-    HomeScreen(
+    } else {
+        HomeScreen(
         videos = homeVideos,
         searchResults = searchResults,
         searchQuery = searchQuery,
@@ -98,6 +96,7 @@ private fun PublivoreTubeApp(
                 searchLoading = false
             }
         },
-        onVideoSelected = { activeVideo = it },
-    )
+            onVideoSelected = { activeVideo = it },
+        )
+    }
 }
