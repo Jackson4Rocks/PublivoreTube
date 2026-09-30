@@ -136,19 +136,12 @@ fun YouTubePlayerScreen(
             }
             webChromeClient = WebChromeClient()
 
-            val embedUrl =
-                "https://www.youtube.com/embed/$videoId" +
-                    "?enablejsapi=1" +
-                    "&autoplay=1" +
-                    "&controls=1" +
-                    "&playsinline=1" +
-                    "&rel=0" +
-                    "&fs=1" +
-                    "&origin=https%3A%2F%2Ftv.publivoretube"
-
-            loadUrl(
-                embedUrl,
-                mapOf("Referer" to "https://tv.publivoretube/"),
+            loadDataWithBaseURL(
+                "https://tv.publivoretube/",
+                playerHtml(videoId),
+                "text/html",
+                "UTF-8",
+                "https://tv.publivoretube/",
             )
         }
     }
