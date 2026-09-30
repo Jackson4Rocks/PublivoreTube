@@ -65,7 +65,7 @@ class YoutubeDataApi(
             "&maxResults=" + maxResults +
             "&safeSearch=moderate" +
             "&regionCode=IN" +
-            "&order=" + encode(order) +
+            "&order=date" +
             "&key=" + encode(apiKey)
 
         val searchJson = get(searchUrl)
@@ -156,7 +156,7 @@ class YoutubeDataApi(
         val searchUrl = baseUrl + "/search?part=snippet" +
             "&type=video" +
             "&channelId=" + encode(channelId) +
-            "&order=date" +
+            "&order=" + encode(order) +
             "&maxResults=" + maxResults +
             "&safeSearch=moderate" +
             "&key=" + encode(apiKey)
