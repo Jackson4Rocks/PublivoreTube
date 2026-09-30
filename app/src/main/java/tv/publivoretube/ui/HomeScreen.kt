@@ -37,7 +37,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.focusable
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -139,6 +138,7 @@ fun HomeScreen(
     onSearchQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
     onVideoSelected: (Video) -> Unit,
+    onShortSelected: (List<Video>, Int) -> Unit,
     onSignIn: () -> Unit,
     onSignOut: () -> Unit,
     onClearHistory: () -> Unit,
@@ -191,7 +191,7 @@ fun HomeScreen(
                     3 -> ShortsScreen(
                         videos = shortsVideos,
                         loading = shortsLoading,
-                        onVideoSelected = onVideoSelected,
+                        onShortSelected = onShortSelected,
                     )
 
                     4 -> HistoryScreen(
