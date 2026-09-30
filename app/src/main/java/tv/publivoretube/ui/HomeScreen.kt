@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -64,6 +65,8 @@ import androidx.compose.material.icons.rounded.PlayCircle
 import coil.compose.AsyncImage
 import androidx.tv.material3.Button
 import androidx.tv.material3.ButtonDefaults
+import androidx.tv.material3.Border
+import androidx.tv.material3.CardDefaults
 import androidx.tv.material3.Card
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Surface
@@ -230,10 +233,13 @@ fun HomeScreen(
 
                     else -> HomeContent(
                         videos = videos,
+                        shortsVideos = shortsVideos,
+                        historyVideos = historyVideos,
                         homeLoading = homeLoading,
                         statusMessage = statusMessage,
                         onSearch = { selectedNav = 1 },
                         onVideoSelected = onVideoSelected,
+                        onShortSelected = onShortSelected,
                     )
                 }
             }
@@ -470,20 +476,23 @@ private fun ShortsScreen(
 @Composable
 private fun HomeContent(
     videos: List<Video>,
+    shortsVideos: List<Video>,
+    historyVideos: List<Video>,
     homeLoading: Boolean,
     statusMessage: String?,
     onSearch: () -> Unit,
     onVideoSelected: (Video) -> Unit,
+    onShortSelected: (List<Video>, Int) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(
             start = 42.dp,
             end = 52.dp,
-            top = 28.dp,
-            bottom = 50.dp,
+            top = 20.dp,
+            bottom = 56.dp,
         ),
-        verticalArrangement = Arrangement.spacedBy(28.dp),
+        verticalArrangement = Arrangement.spacedBy(30.dp),
     ) {
         item { TopBar(onSearch = onSearch) }
 
@@ -514,14 +523,49 @@ private fun HomeContent(
                 )
             }
 
-            item { ContentRow("Recommended", videos, onVideoSelected) }
-            item { ContentRow("Trending", videos.asReversed(), onVideoSelected) }
+            if (historyVideos.isNotEmpty()) {
+                item {
+                    ContentRow(
+                        title = "Continue watching",
+                        videos = historyVideos,
+                        onVideoSelected = onVideoSelected,
+                    )
+                }
+            }
+
             item {
                 ContentRow(
-                    "Continue watching",
-                    videos.drop(1) + videos.take(1),
-                    onVideoSelected,
+                    title = "Recommended",
+                    videos = videos,
+                    onVideoSelected = onVideoSelected,
                 )
+            }
+
+            item {
+                ContentRow(
+                    title = "Trending",
+                    videos = videos.asReversed(),
+                    onVideoSelected = onVideoSelected,
+                )
+            }
+
+            if (shortsVideos.isNotEmpty()) {
+                item {
+                    ShortsContentRow(
+                        videos = shortsVideos,
+                        onShortSelected = onShortSelected,
+                    )
+                }
+            }
+
+            if (videos.size > 20) {
+                item {
+                    ContentRow(
+                        title = "More to watch",
+                        videos = videos.drop(20) + videos.take(20),
+                        onVideoSelected = onVideoSelected,
+                    )
+                }
             }
         }
     }
@@ -680,7 +724,7 @@ private fun ContentRow(
 
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(18.dp),
-            contentPadding = PaddingValues(end = 12.dp),
+            contentPadding = PaddingValues(end = 22.dp),
         ) {
             items(videos, key = { it.id + title }) { video ->
                 VideoCard(
@@ -693,26 +737,127 @@ private fun ContentRow(
 }
 
 @Composable
+private fun ShortsContentRow(
+    videos: List<Video>,
+    onShortSelected: (List<Video>, Int) -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = "Shorts",
+                style = MaterialTheme.typography.titleLarge,
+                color = Color.White,
+            )
+            Spacer(Modifier.width(10.dp))
+            Text(
+                text = "Quick vertical videos",
+                style = MaterialTheme.typography.bodySmall,
+                color = TextMuted,
+            )
+        }
+
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(end = 22.dp),
+        ) {
+            items(videos, key = { "home-short-" + it.id }) { video ->
+                ShortPreviewCard(
+                    video = video,
+                    onClick = {
+                        onShortSelected(videos, videos.indexOfFirst { item -> item.id == video.id })
+                    },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ShortPreviewCard(
+    video: Video,
+    onClick: () -> Unit,
+) {
+    Card(
+        onClick = onClick,
+        modifier = Modifier
+            .width(190.dp)
+            .height(330.dp),
+        shape = CardDefaults.shape(shape = RoundedCornerShape(22.dp)),
+        colors = CardDefaults.colors(
+            containerColor = CardSurface,
+            contentColor = Color.White,
+            focusedContainerColor = CardSurface,
+            focusedContentColor = Color.White,
+            pressedContainerColor = CardSurface,
+            pressedContentColor = Color.White,
+        ),
+        border = CardDefaults.border(
+            focusedBorder = Border(
+                border = BorderStroke(3.dp, AccentStrong),
+                shape = RoundedCornerShape(22.dp),
+            ),
+        ),
+        scale = CardDefaults.scale(focusedScale = 1.04f),
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            AsyncImage(
+                model = video.thumbnail,
+                contentDescription = video.title,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(255.dp)
+                    .clip(RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp)),
+                contentScale = ContentScale.Crop,
+            )
+            Column(
+                modifier = Modifier.padding(12.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Text(
+                    video.title,
+                    style = MaterialTheme.typography.titleSmall,
+                    color = Color.White,
+                    maxLines = 2,
+                )
+                Text(
+                    video.channel,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextMuted,
+                    maxLines = 1,
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun VideoCard(
     video: Video,
     onClick: () -> Unit,
 ) {
-    var focused by remember { mutableIntStateOf(0) }
     val shape = RoundedCornerShape(22.dp)
 
     Card(
         onClick = onClick,
         modifier = Modifier
             .width(310.dp)
-            .height(238.dp)
-            .onFocusChanged { focused = if (it.isFocused) 1 else 0 }
-            .then(
-                if (focused == 1) {
-                    Modifier.border(3.dp, AccentStrong, shape)
-                } else {
-                    Modifier
-                },
+            .height(238.dp),
+        shape = CardDefaults.shape(shape = shape),
+        colors = CardDefaults.colors(
+            containerColor = CardSurface,
+            contentColor = Color.White,
+            focusedContainerColor = CardSurface,
+            focusedContentColor = Color.White,
+            pressedContainerColor = CardSurface,
+            pressedContentColor = Color.White,
+        ),
+        border = CardDefaults.border(
+            focusedBorder = Border(
+                border = BorderStroke(3.dp, AccentStrong),
+                shape = shape,
             ),
+        ),
+        scale = CardDefaults.scale(focusedScale = 1.04f),
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Box(
@@ -799,10 +944,10 @@ private fun SearchScreen(
             .padding(
                 start = 42.dp,
                 end = 52.dp,
-                top = 28.dp,
+                top = 14.dp,
                 bottom = 38.dp,
             ),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(
             text = "Search YouTube",
@@ -818,7 +963,7 @@ private fun SearchScreen(
             Surface(
                 modifier = Modifier
                     .weight(1f)
-                    .height(68.dp),
+                    .height(64.dp),
                 shape = PillShape,
                 colors = SurfaceDefaults.colors(containerColor = CardSurface),
             ) {
@@ -884,7 +1029,7 @@ private fun SearchScreen(
             Button(
                 onClick = { onSearch(query) },
                 shape = ButtonDefaults.shape(PillShape),
-        colors = tvPillButtonColors(),
+                colors = tvPillButtonColors(),
                 contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
             ) {
                 Row(
@@ -924,10 +1069,15 @@ private fun SearchScreen(
                 )
             }
         } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(14.dp),
-                contentPadding = PaddingValues(bottom = 20.dp),
+            Text(
+                text = "Results" + if (query.isBlank()) "" else " for “" + query + "”",
+                style = MaterialTheme.typography.titleLarge,
+                color = Color.White,
+            )
+
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(18.dp),
+                contentPadding = PaddingValues(end = 24.dp, bottom = 18.dp),
             ) {
                 items(results, key = { "search-" + it.id }) { video ->
                     SearchResultCard(
@@ -945,42 +1095,75 @@ private fun SearchResultCard(
     video: Video,
     onClick: () -> Unit,
 ) {
-    var focused by remember { mutableIntStateOf(0) }
     val shape = RoundedCornerShape(22.dp)
 
     Card(
         onClick = onClick,
         modifier = Modifier
-            .fillMaxWidth()
-            .height(150.dp)
-            .onFocusChanged { focused = if (it.isFocused) 1 else 0 }
-            .then(
-                if (focused == 1) {
-                    Modifier.border(3.dp, AccentStrong, shape)
-                } else {
-                    Modifier
-                },
+            .width(310.dp)
+            .height(238.dp),
+        shape = CardDefaults.shape(shape = shape),
+        colors = CardDefaults.colors(
+            containerColor = CardSurface,
+            contentColor = Color.White,
+            focusedContainerColor = CardSurface,
+            focusedContentColor = Color.White,
+            pressedContainerColor = CardSurface,
+            pressedContentColor = Color.White,
+        ),
+        border = CardDefaults.border(
+            focusedBorder = Border(
+                border = BorderStroke(3.dp, AccentStrong),
+                shape = shape,
             ),
+        ),
+        scale = CardDefaults.scale(focusedScale = 1.04f),
     ) {
-        Row(modifier = Modifier.fillMaxSize()) {
-            AsyncImage(
-                model = video.thumbnail,
-                contentDescription = video.title,
+        Column(modifier = Modifier.fillMaxSize()) {
+            Box(
                 modifier = Modifier
-                    .width(238.dp)
-                    .fillMaxHeight()
-                    .clip(
-                        RoundedCornerShape(
-                            topStart = 22.dp,
-                            bottomStart = 22.dp,
+                    .fillMaxWidth()
+                    .height(174.dp)
+                    .clip(RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp))
+                    .background(
+                        Brush.linearGradient(
+                            listOf(
+                                Color(0xFF332455),
+                                Color(0xFF171421),
+                            ),
                         ),
                     ),
-                contentScale = ContentScale.Crop,
-            )
+            ) {
+                AsyncImage(
+                    model = video.thumbnail,
+                    contentDescription = video.title,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                )
+
+                if (video.duration.isNotBlank()) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(10.dp)
+                            .background(
+                                color = Color(0xDD000000),
+                                shape = RoundedCornerShape(9.dp),
+                            ),
+                    ) {
+                        Text(
+                            text = video.duration,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.White,
+                        )
+                    }
+                }
+            }
 
             Column(
-                modifier = Modifier.padding(18.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                verticalArrangement = Arrangement.spacedBy(3.dp),
             ) {
                 Text(
                     text = video.title,
@@ -990,17 +1173,10 @@ private fun SearchResultCard(
                 )
                 Text(
                     text = video.channel,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodySmall,
                     color = TextMuted,
                     maxLines = 1,
                 )
-                if (video.duration.isNotBlank()) {
-                    Text(
-                        text = video.duration,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = AccentStrong,
-                    )
-                }
             }
         }
     }
