@@ -314,7 +314,7 @@ class YouTubePlayerActivity : ComponentActivity() {
             "Remember position: " + if (prefs.rememberPosition) "On" else "Off",
         )
 
-        androidx.appcompat.app.AlertDialog.Builder(this)
+        android.app.AlertDialog.Builder(this)
             .setTitle("Player settings")
             .setItems(options) { _, which ->
                 when (which) {
