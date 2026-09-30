@@ -49,6 +49,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -77,6 +79,7 @@ fun YouTubePlayerScreen(
 ) {
     val context = LocalContext.current
     val videoId = video.id
+    val backFocusRequester = remember(videoId) { FocusRequester() }
     var captionsEnabled by remember(videoId) { mutableStateOf(false) }
     var settingsOpen by remember(videoId) { mutableStateOf(false) }
     var statusMessage by remember(videoId) {
@@ -156,6 +159,10 @@ fun YouTubePlayerScreen(
 
     var playerFocused by remember(videoId) { mutableStateOf(false) }
 
+    LaunchedEffect(videoId) {
+        backFocusRequester.requestFocus()
+    }
+
     BackHandler {
         if (playerFocused || webView.hasFocus()) {
             webView.clearFocus()
@@ -221,6 +228,7 @@ fun YouTubePlayerScreen(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 ActionButton(
+                    modifier = Modifier.focusRequester(backFocusRequester),
                     icon = Icons.Rounded.ArrowBack,
                     text = "Back",
                     onClick = onBack,
@@ -447,13 +455,14 @@ fun YouTubePlayerScreen(
 
 @Composable
 private fun ActionButton(
+    modifier: Modifier = Modifier,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     text: String,
     onClick: () -> Unit,
 ) {
     Button(
         onClick = onClick,
-        modifier = Modifier.height(50.dp),
+        modifier = modifier.height(50.dp),
         shape = ButtonDefaults.shape(Pill),
         colors = ButtonDefaults.colors(
             containerColor = Color(0xFF25202F),
