@@ -57,6 +57,7 @@ import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Subscriptions
 import coil.compose.AsyncImage
 import androidx.tv.material3.Button
+import androidx.tv.material3.ButtonDefaults
 import androidx.tv.material3.Card
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Surface
@@ -203,7 +204,7 @@ private fun NavigationItem(
 ) {
     Button(
         onClick = onClick,
-        shape = PillShape,
+        shape = ButtonDefaults.shape(PillShape),
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
@@ -338,7 +339,7 @@ private fun TopBar(onSearch: () -> Unit) {
 
         Button(
             onClick = onSearch,
-            shape = PillShape,
+            shape = ButtonDefaults.shape(PillShape),
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
         ) {
             Row(
@@ -415,7 +416,7 @@ private fun HeroBanner(
 
                 Button(
                     onClick = onClick,
-                    shape = PillShape,
+                    shape = ButtonDefaults.shape(PillShape),
                     contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
                 ) {
                     Row(
@@ -590,7 +591,7 @@ private fun SearchScreen(
                     .weight(1f)
                     .height(68.dp)
                     .focusRequester(focusRequester),
-                shape = PillShape,
+                shape = ButtonDefaults.shape(PillShape),
                 colors = SurfaceDefaults.colors(containerColor = CardSurface),
             ) {
                 Row(
@@ -637,7 +638,7 @@ private fun SearchScreen(
 
             Button(
                 onClick = { onSearch(query) },
-                shape = PillShape,
+                shape = ButtonDefaults.shape(PillShape),
                 contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
             ) {
                 Row(
@@ -839,7 +840,7 @@ private fun AboutScreen() {
                                 ),
                             )
                         },
-                        shape = PillShape,
+                        shape = ButtonDefaults.shape(PillShape),
                         contentPadding = PaddingValues(horizontal = 18.dp, vertical = 12.dp),
                     ) {
                         Row(
