@@ -196,6 +196,25 @@ private fun PublivoreTubeApp(
             }
         },
         onVideoSelected = ::openVideo,
+        onShortSelected = { shorts, startIndex ->
+            context.startActivity(
+                Intent(context, ShortsPlayerActivity::class.java).apply {
+                    putStringArrayListExtra(
+                        ShortsPlayerActivity.EXTRA_VIDEO_IDS,
+                        ArrayList(shorts.map { it.id }),
+                    )
+                    putStringArrayListExtra(
+                        ShortsPlayerActivity.EXTRA_TITLES,
+                        ArrayList(shorts.map { it.title }),
+                    )
+                    putStringArrayListExtra(
+                        ShortsPlayerActivity.EXTRA_CHANNELS,
+                        ArrayList(shorts.map { it.channel }),
+                    )
+                    putExtra(ShortsPlayerActivity.EXTRA_START_INDEX, startIndex)
+                },
+            )
+        },
         onSignIn = {
             if (!authManager.isConfigured) {
                 statusMessage =
