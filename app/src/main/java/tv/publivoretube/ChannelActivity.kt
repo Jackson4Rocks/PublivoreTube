@@ -102,6 +102,7 @@ private fun ChannelPage(
     val api = remember { YoutubeDataApi(BuildConfig.YOUTUBE_API_KEY) }
     var info by remember { mutableStateOf<ChannelInfo?>(null) }
     var shelves by remember { mutableStateOf(emptyList<ChannelShelf>()) }
+    var loading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(channelId) {
@@ -110,6 +111,8 @@ private fun ChannelPage(
             shelves = api.channelShelves(channelId)
         } catch (t: Throwable) {
             error = t.message ?: "Unable to load channel."
+        } finally {
+            loading = false
         }
     }
 
@@ -242,14 +245,27 @@ private fun ChannelPage(
                 }
             }
 
-            if (shelves.isEmpty() && error == null) {
+            if (loading) {
                 item {
                     Box(
                         modifier = Modifier.fillMaxWidth().height(260.dp),
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
-                            "Loading channel shelves…",
+                            "Loading channel…",
+                            color = Muted,
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                    }
+                }
+            } else if (shelves.isEmpty() && error == null) {
+                item {
+                    Box(
+                        modifier = Modifier.fillMaxWidth().height(260.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            "No public videos or channel shelves found.",
                             color = Muted,
                             style = MaterialTheme.typography.titleMedium,
                         )
