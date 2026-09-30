@@ -60,6 +60,7 @@ import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Subscriptions
+import androidx.compose.material.icons.rounded.PlayCircle
 import coil.compose.AsyncImage
 import androidx.tv.material3.Button
 import androidx.tv.material3.ButtonDefaults
@@ -102,6 +103,7 @@ private val NavDestinations = listOf(
     NavDestination(Icons.Rounded.Home, "Home"),
     NavDestination(Icons.Rounded.Search, "Search"),
     NavDestination(Icons.Rounded.Subscriptions, "Subscriptions"),
+    NavDestination(Icons.Rounded.PlayCircle, "Shorts"),
     NavDestination(Icons.Rounded.History, "History"),
     NavDestination(Icons.Rounded.Settings, "Settings"),
     NavDestination(Icons.Rounded.Info, "About"),
@@ -118,6 +120,8 @@ fun HomeScreen(
     statusMessage: String?,
     historyVideos: List<Video>,
     subscriptions: List<Subscription>,
+    shortsVideos: List<Video>,
+    shortsLoading: Boolean,
     signedIn: Boolean,
     account: GoogleAccount?,
     oauthConfigured: Boolean,
@@ -183,13 +187,19 @@ fun HomeScreen(
                         onSignIn = onSignIn,
                     )
 
-                    3 -> HistoryScreen(
+                    3 -> ShortsScreen(
+                        videos = shortsVideos,
+                        loading = shortsLoading,
+                        onVideoSelected = onVideoSelected,
+                    )
+
+                    4 -> HistoryScreen(
                         videos = historyVideos,
                         onVideoSelected = onVideoSelected,
                         onClear = onClearHistory,
                     )
 
-                    4 -> SettingsScreen(
+                    5 -> SettingsScreen(
                         signedIn = signedIn,
                         account = account,
                         oauthConfigured = oauthConfigured,
@@ -215,7 +225,7 @@ fun HomeScreen(
                         onClearHistory = onClearHistory,
                     )
 
-                    5 -> AboutScreen()
+                    6 -> AboutScreen()
 
                     else -> HomeContent(
                         videos = videos,
@@ -321,6 +331,93 @@ private fun NavigationItem(
                 color = if (selected) Accent else Color.White,
                 maxLines = 1,
             )
+        }
+    }
+}
+
+@Composable
+private fun ShortsScreen(
+    videos: List<Video>,
+    loading: Boolean,
+    onVideoSelected: (Video) -> Unit,
+) {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(42.dp),
+        verticalArrangement = Arrangement.spacedBy(18.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                Icons.Rounded.PlayCircle,
+                null,
+                tint = AccentStrong,
+                modifier = Modifier.size(30.dp),
+            )
+            Text(
+                "Shorts",
+                style = MaterialTheme.typography.displaySmall,
+                color = Color.White,
+                modifier = Modifier.padding(start = 12.dp),
+            )
+        }
+
+        Text(
+            "Short-form videos discovered through YouTube search.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = TextMuted,
+        )
+
+        when {
+            loading -> Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text("Loading Shorts…", color = TextMuted)
+            }
+
+            videos.isEmpty() -> Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text("No Shorts found right now.", color = TextMuted)
+            }
+
+            else -> LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(18.dp),
+                contentPadding = PaddingValues(end = 24.dp),
+            ) {
+                items(videos, key = { "short-" + it.id }) { video ->
+                    Card(
+                        onClick = { onVideoSelected(video) },
+                        modifier = Modifier.width(210.dp).height(360.dp),
+                    ) {
+                        Column(modifier = Modifier.fillMaxSize()) {
+                            AsyncImage(
+                                model = video.thumbnail,
+                                contentDescription = video.title,
+                                modifier = Modifier.fillMaxWidth().height(280.dp),
+                                contentScale = ContentScale.Crop,
+                            )
+                            Column(
+                                modifier = Modifier.padding(12.dp),
+                                verticalArrangement = Arrangement.spacedBy(4.dp),
+                            ) {
+                                Text(
+                                    video.title,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = Color.White,
+                                    maxLines = 2,
+                                )
+                                Text(
+                                    video.channel,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = TextMuted,
+                                    maxLines = 1,
+                                )
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
