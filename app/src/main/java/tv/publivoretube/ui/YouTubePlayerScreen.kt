@@ -3,6 +3,7 @@ package tv.publivoretube.ui
 import android.content.Intent
 import android.graphics.Color as AndroidColor
 import android.net.Uri
+import android.view.View
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -89,8 +90,10 @@ fun YouTubePlayerScreen(
     val webView = remember(videoId) {
         WebView(context).apply {
             setBackgroundColor(AndroidColor.BLACK)
+            setLayerType(View.LAYER_TYPE_HARDWARE, null)
             isFocusable = false
             isFocusableInTouchMode = false
+            isClickable = false
 
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
@@ -136,15 +139,17 @@ fun YouTubePlayerScreen(
 
             val embedUrl =
                 "https://www.youtube.com/embed/$videoId" +
-                    "?autoplay=1" +
+                    "?enablejsapi=1" +
+                    "&autoplay=1" +
                     "&controls=1" +
                     "&playsinline=1" +
                     "&rel=0" +
-                    "&fs=1"
+                    "&fs=1" +
+                    "&origin=https%3A%2F%2Ftv.publivoretube"
 
             loadUrl(
                 embedUrl,
-                mapOf("Referer" to "https://tv.publivoretube"),
+                mapOf("Referer" to "https://" + context.packageName),
             )
         }
     }
@@ -157,23 +162,11 @@ fun YouTubePlayerScreen(
         }
     }
 
-    var playerFocused by remember(videoId) { mutableStateOf(false) }
-
     LaunchedEffect(videoId) {
         backFocusRequester.requestFocus()
     }
 
-    BackHandler {
-        if (playerFocused || webView.hasFocus()) {
-            webView.clearFocus()
-            webView.isFocusable = false
-            webView.isFocusableInTouchMode = false
-            playerFocused = false
-            statusMessage = "PublivoreTube controls focused."
-        } else {
-            onBack()
-        }
-    }
+    BackHandler(onBack = onBack)
 
 
     fun shareVideo() {
@@ -266,31 +259,15 @@ fun YouTubePlayerScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(8.dp)
-                        .clip(PlayerShape)
                         .background(Color.Black),
                     contentAlignment = Alignment.Center,
                 ) {
                     AndroidView(
                         factory = { webView },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(16f / 9f)
-                            .clip(RoundedCornerShape(18.dp)),
+                        modifier = Modifier.fillMaxSize(),
                     )
                 }
             }
-
-            ActionButton(
-                icon = Icons.Rounded.OpenInNew,
-                text = "Player Controls",
-                onClick = {
-                    webView.isFocusable = true
-                    webView.isFocusableInTouchMode = true
-                    webView.requestFocus()
-                    playerFocused = true
-                    statusMessage = "Player focused. Press Back to return to PublivoreTube controls."
-                },
-            )
 
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
