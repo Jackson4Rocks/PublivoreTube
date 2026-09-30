@@ -21,11 +21,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -40,10 +40,21 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.OpenInNew
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Subscriptions
 import coil.compose.AsyncImage
 import androidx.tv.material3.Button
 import androidx.tv.material3.Card
@@ -60,6 +71,21 @@ private val CardSurface = Color(0xFF171521)
 private val Accent = Color(0xFFE7DAFF)
 private val AccentStrong = Color(0xFFC59BFF)
 private val TextMuted = Color(0xFFB9B2C5)
+private val PillShape = RoundedCornerShape(50.dp)
+
+private data class NavDestination(
+    val icon: ImageVector,
+    val label: String,
+)
+
+private val NavDestinations = listOf(
+    NavDestination(Icons.Rounded.Home, "Home"),
+    NavDestination(Icons.Rounded.Search, "Search"),
+    NavDestination(Icons.Rounded.Subscriptions, "Subscriptions"),
+    NavDestination(Icons.Rounded.History, "History"),
+    NavDestination(Icons.Rounded.Settings, "Settings"),
+    NavDestination(Icons.Rounded.Info, "About"),
+)
 
 @Composable
 fun HomeScreen(
@@ -104,7 +130,9 @@ fun HomeScreen(
                         onSearch = onSearch,
                         onVideoSelected = onVideoSelected,
                     )
+
                     5 -> AboutScreen()
+
                     else -> HomeContent(
                         videos = videos,
                         homeLoading = homeLoading,
@@ -129,44 +157,34 @@ private fun NavigationRail(
         homeFocusRequester.requestFocus()
     }
 
-    val destinations = listOf(
-        "H" to "Home",
-        "S" to "Search",
-        "C" to "Subscriptions",
-        "↺" to "History",
-        "⚙" to "Settings",
-        "i" to "About",
-    )
-
     Surface(
         modifier = Modifier
-            .width(128.dp)
+            .width(188.dp)
             .fillMaxHeight(),
         colors = SurfaceDefaults.colors(containerColor = CanvasElevated),
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 20.dp),
+            modifier = Modifier.padding(horizontal = 18.dp, vertical = 22.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Surface(
-                modifier = Modifier.size(58.dp),
-                shape = RoundedCornerShape(18.dp),
+                modifier = Modifier.size(62.dp),
+                shape = RoundedCornerShape(20.dp),
                 colors = SurfaceDefaults.colors(containerColor = CardSurface),
             ) {
                 Image(
                     painter = painterResource(R.drawable.ic_publivoretube_mark),
                     contentDescription = "PublivoreTube",
-                    modifier = Modifier.padding(6.dp),
+                    modifier = Modifier.padding(7.dp),
                 )
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            destinations.forEachIndexed { index, (icon, label) ->
+            NavDestinations.forEachIndexed { index, destination ->
                 NavigationItem(
-                    icon = icon,
-                    label = label,
+                    destination = destination,
                     selected = selected == index,
                     focusRequester = if (index == 0) homeFocusRequester else null,
                     onClick = { onSelected(index) },
@@ -178,48 +196,44 @@ private fun NavigationRail(
 
 @Composable
 private fun NavigationItem(
-    icon: String,
-    label: String,
+    destination: NavDestination,
     selected: Boolean,
     focusRequester: FocusRequester?,
     onClick: () -> Unit,
 ) {
-    val shape = RoundedCornerShape(18.dp)
-
     Button(
         onClick = onClick,
+        shape = PillShape,
         modifier = Modifier
             .fillMaxWidth()
-            .height(76.dp)
+            .height(60.dp)
             .then(focusRequester?.let { Modifier.focusRequester(it) } ?: Modifier)
             .then(
                 if (selected) {
-                    Modifier.border(2.dp, AccentStrong, shape)
+                    Modifier.border(2.dp, AccentStrong, PillShape)
                 } else {
                     Modifier
                 },
             ),
-        contentPadding = PaddingValues(horizontal = 6.dp, vertical = 6.dp),
+        contentPadding = PaddingValues(horizontal = 17.dp, vertical = 10.dp),
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Box(
-                modifier = Modifier.size(30.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = icon,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = if (selected) Accent else Color.White,
-                )
-            }
+            Icon(
+                imageVector = destination.icon,
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+                tint = if (selected) Accent else TextMuted,
+            )
 
             Text(
-                text = label,
-                style = MaterialTheme.typography.labelSmall,
-                color = if (selected) Accent else TextMuted,
+                text = destination.label,
+                style = MaterialTheme.typography.labelLarge,
+                color = if (selected) Accent else Color.White,
+                maxLines = 1,
             )
         }
     }
@@ -249,12 +263,12 @@ private fun HomeContent(
             item {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(18.dp),
+                    shape = RoundedCornerShape(20.dp),
                     colors = SurfaceDefaults.colors(containerColor = Color(0xFF21192B)),
                 ) {
                     Text(
                         text = statusMessage,
-                        modifier = Modifier.padding(horizontal = 18.dp, vertical = 14.dp),
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 14.dp),
                         style = MaterialTheme.typography.bodyMedium,
                         color = Accent,
                     )
@@ -322,8 +336,22 @@ private fun TopBar(onSearch: () -> Unit) {
 
         Spacer(modifier = Modifier.weight(1f))
 
-        Button(onClick = onSearch) {
-            Text("Search")
+        Button(
+            onClick = onSearch,
+            shape = PillShape,
+            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(9.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    Icons.Rounded.Search,
+                    contentDescription = null,
+                    modifier = Modifier.size(22.dp),
+                )
+                Text("Search")
+            }
         }
     }
 }
@@ -385,8 +413,22 @@ private fun HeroBanner(
                     color = TextMuted,
                 )
 
-                Button(onClick = onClick) {
-                    Text("Open video")
+                Button(
+                    onClick = onClick,
+                    shape = PillShape,
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(9.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            Icons.Rounded.PlayArrow,
+                            contentDescription = null,
+                            modifier = Modifier.size(22.dp),
+                        )
+                        Text("Open video")
+                    }
                 }
             }
         }
@@ -471,7 +513,7 @@ private fun VideoCard(
                             .padding(10.dp)
                             .background(
                                 color = Color(0xDD000000),
-                                shape = RoundedCornerShape(7.dp),
+                                shape = RoundedCornerShape(9.dp),
                             ),
                     ) {
                         Text(
@@ -548,53 +590,67 @@ private fun SearchScreen(
                     .weight(1f)
                     .height(68.dp)
                     .focusRequester(focusRequester),
-                shape = RoundedCornerShape(18.dp),
+                shape = PillShape,
                 colors = SurfaceDefaults.colors(containerColor = CardSurface),
             ) {
-                BasicTextField(
-                    value = query,
-                    onValueChange = onQueryChange,
+                Row(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 18.dp, vertical = 11.dp),
-                    singleLine = true,
-                    textStyle = MaterialTheme.typography.bodyLarge.copy(
-                        color = Color.White,
-                    ),
-                    decorationBox = { innerTextField ->
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.Center,
-                        ) {
-                            Text(
-                                text = "Search YouTube",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = AccentStrong,
-                            )
+                        .padding(horizontal = 18.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        Icons.Rounded.Search,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                        tint = AccentStrong,
+                    )
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    BasicTextField(
+                        value = query,
+                        onValueChange = onQueryChange,
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        textStyle = MaterialTheme.typography.bodyLarge.copy(
+                            color = Color.White,
+                        ),
+                        decorationBox = { innerTextField ->
                             Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(28.dp),
+                                modifier = Modifier.fillMaxWidth(),
                                 contentAlignment = Alignment.CenterStart,
                             ) {
                                 if (query.isBlank()) {
                                     Text(
-                                        text = "Type with your remote keyboard…",
+                                        text = "Search YouTube…",
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = TextMuted,
                                     )
                                 }
                                 innerTextField()
                             }
-                        }
-                    },
-                )
+                        },
+                    )
+                }
             }
 
             Button(
                 onClick = { onSearch(query) },
+                shape = PillShape,
+                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
             ) {
-                Text("Search")
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(9.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        Icons.Rounded.Search,
+                        contentDescription = null,
+                        modifier = Modifier.size(22.dp),
+                    )
+                    Text("Search")
+                }
             }
         }
 
@@ -783,8 +839,20 @@ private fun AboutScreen() {
                                 ),
                             )
                         },
+                        shape = PillShape,
+                        contentPadding = PaddingValues(horizontal = 18.dp, vertical = 12.dp),
                     ) {
-                        Text("GitHub ↗")
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                Icons.Rounded.OpenInNew,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp),
+                            )
+                            Text("GitHub")
+                        }
                     }
                 }
             }
