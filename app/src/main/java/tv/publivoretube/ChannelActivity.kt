@@ -1,8 +1,11 @@
 package tv.publivoretube
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,13 +17,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,20 +33,32 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.tv.material3.Border
 import androidx.tv.material3.Button
 import androidx.tv.material3.ButtonDefaults
 import androidx.tv.material3.Card
+import androidx.tv.material3.CardDefaults
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Surface
 import androidx.tv.material3.SurfaceDefaults
 import androidx.tv.material3.Text
 import coil.compose.AsyncImage
-import android.content.Intent
 import tv.publivoretube.data.ChannelInfo
+import tv.publivoretube.data.ChannelShelf
+import tv.publivoretube.data.ChannelShelfRow
+import tv.publivoretube.data.Video
 import tv.publivoretube.data.YoutubeDataApi
 import tv.publivoretube.ui.theme.PublivoreTubeTheme
+
+private val Background = Color(0xFF08070D)
+private val Panel = Color(0xFF171521)
+private val AccentStrong = Color(0xFFC59BFF)
+private val Muted = Color(0xFFB9B2C5)
 
 class ChannelActivity : ComponentActivity() {
     private val channelId: String
@@ -76,21 +93,21 @@ class ChannelActivity : ComponentActivity() {
     }
 }
 
-@androidx.compose.runtime.Composable
+@Composable
 private fun ChannelPage(
     channelId: String,
     onBack: () -> Unit,
-    onVideoSelected: (tv.publivoretube.data.Video) -> Unit,
+    onVideoSelected: (Video) -> Unit,
 ) {
     val api = remember { YoutubeDataApi(BuildConfig.YOUTUBE_API_KEY) }
     var info by remember { mutableStateOf<ChannelInfo?>(null) }
-    var videos by remember { mutableStateOf(emptyList<tv.publivoretube.data.Video>()) }
+    var shelves by remember { mutableStateOf(emptyList<ChannelShelf>()) }
     var error by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(channelId) {
         try {
             info = api.channelInfo(channelId)
-            videos = api.channelVideos(channelId)
+            shelves = api.channelShelves(channelId)
         } catch (t: Throwable) {
             error = t.message ?: "Unable to load channel."
         }
@@ -98,12 +115,17 @@ private fun ChannelPage(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        colors = SurfaceDefaults.colors(containerColor = Color(0xFF08070D)),
+        colors = SurfaceDefaults.colors(containerColor = Background),
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(42.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
+            contentPadding = PaddingValues(
+                start = 42.dp,
+                end = 52.dp,
+                top = 24.dp,
+                bottom = 56.dp,
+            ),
+            verticalArrangement = Arrangement.spacedBy(28.dp),
         ) {
             item {
                 Row(
@@ -115,9 +137,9 @@ private fun ChannelPage(
                         shape = ButtonDefaults.shape(RoundedCornerShape(50.dp)),
                     ) {
                         Icon(Icons.Rounded.ArrowBack, null)
-                        Text(" Back")
+                        Text("  Back")
                     }
-                    Spacer(Modifier.size(18.dp))
+                    Spacer(Modifier.width(18.dp))
                     Text(
                         info?.title ?: "Channel",
                         style = MaterialTheme.typography.displaySmall,
@@ -130,108 +152,262 @@ private fun ChannelPage(
                 val current = info
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = SurfaceDefaults.colors(containerColor = Color(0xFF171521)),
+                    shape = RoundedCornerShape(26.dp),
+                    colors = SurfaceDefaults.colors(containerColor = Panel),
                 ) {
-                    Row(
-                        modifier = Modifier.padding(22.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(18.dp),
-                    ) {
-                        AsyncImage(
-                            model = current?.thumbnail,
-                            contentDescription = current?.title,
-                            modifier = Modifier.size(96.dp),
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(150.dp)
+                                .background(
+                                    Brush.horizontalGradient(
+                                        listOf(
+                                            Color(0xFF241936),
+                                            Color(0xFF11101A),
+                                        ),
+                                    ),
+                                ),
                         )
-                        Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                            Text(
-                                current?.title ?: "Loading channel…",
-                                style = MaterialTheme.typography.headlineSmall,
-                                color = Color.White,
+
+                        Row(
+                            modifier = Modifier.padding(24.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(18.dp),
+                        ) {
+                            AsyncImage(
+                                model = current?.thumbnail,
+                                contentDescription = current?.title,
+                                modifier = Modifier
+                                    .size(106.dp)
+                                    .clip(RoundedCornerShape(28.dp)),
+                                contentScale = ContentScale.Crop,
                             )
-                            val stats = buildString {
-                                if (!current?.subscriberCount.isNullOrBlank()) {
-                                    append(current?.subscriberCount)
-                                    append(" subscribers")
+
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.spacedBy(6.dp),
+                            ) {
+                                Text(
+                                    current?.title ?: "Loading channel…",
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    color = Color.White,
+                                )
+
+                                val stats = buildString {
+                                    if (!current?.subscriberCount.isNullOrBlank()) {
+                                        append(current?.subscriberCount)
+                                        append(" subscribers")
+                                    }
+                                    if (!current?.videoCount.isNullOrBlank()) {
+                                        if (isNotEmpty()) append("  •  ")
+                                        append(current?.videoCount)
+                                        append(" videos")
+                                    }
                                 }
-                                if (!current?.videoCount.isNullOrBlank()) {
-                                    if (isNotEmpty()) append("  •  ")
-                                    append(current?.videoCount)
-                                    append(" videos")
+
+                                Text(
+                                    stats.ifBlank { "YouTube channel" },
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Muted,
+                                )
+
+                                if (!current?.description.isNullOrBlank()) {
+                                    Text(
+                                        current?.description.orEmpty(),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Muted,
+                                        maxLines = 3,
+                                    )
                                 }
                             }
-                            Text(
-                                stats.ifBlank { "YouTube channel" },
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color(0xFFB9B2C5),
-                            )
                         }
                     }
                 }
-            }
-
-            item {
-                Text(
-                    "Latest videos",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = Color.White,
-                )
             }
 
             if (error != null) {
                 item {
-                    Text(error.orEmpty(), color = Color(0xFFE7DAFF))
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(18.dp),
+                        colors = SurfaceDefaults.colors(containerColor = Color(0xFF21192B)),
+                    ) {
+                        Text(
+                            error.orEmpty(),
+                            modifier = Modifier.padding(18.dp),
+                            color = Color(0xFFE7DAFF),
+                        )
+                    }
                 }
-            } else if (videos.isEmpty()) {
+            }
+
+            if (shelves.isEmpty() && error == null) {
                 item {
                     Box(
-                        modifier = Modifier.fillMaxWidth().height(240.dp),
+                        modifier = Modifier.fillMaxWidth().height(260.dp),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Text("Loading channel videos…", color = Color(0xFFB9B2C5))
+                        Text(
+                            "Loading channel shelves…",
+                            color = Muted,
+                            style = MaterialTheme.typography.titleMedium,
+                        )
                     }
                 }
-            } else {
-                items(videos, key = { it.id }) { video ->
-                    Card(
-                        onClick = { onVideoSelected(video) },
-                        modifier = Modifier.fillMaxWidth().height(128.dp),
+            }
+
+            shelves.forEach { shelf ->
+                item(key = "section-" + shelf.position + "-" + shelf.type) {
+                    ChannelShelfBlock(
+                        shelf = shelf,
+                        onVideoSelected = onVideoSelected,
+                    )
+                }
+            }
+
+            if (shelves.isNotEmpty()) {
+                item {
+                    Text(
+                        "Channel layout loaded from YouTube",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Muted,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ChannelShelfBlock(
+    shelf: ChannelShelf,
+    onVideoSelected: (Video) -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        Text(
+            shelf.title,
+            style = MaterialTheme.typography.titleLarge,
+            color = Color.White,
+        )
+
+        shelf.rows.forEachIndexed { rowIndex, row ->
+            ChannelShelfRowView(
+                row = row,
+                rowIndex = rowIndex,
+                onVideoSelected = onVideoSelected,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ChannelShelfRowView(
+    row: ChannelShelfRow,
+    rowIndex: Int,
+    onVideoSelected: (Video) -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(9.dp)) {
+        if (row.title.isNotBlank()) {
+            Text(
+                row.title,
+                style = MaterialTheme.typography.titleMedium,
+                color = if (rowIndex == 0) Color.White else Muted,
+            )
+        }
+
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(18.dp),
+            contentPadding = PaddingValues(end = 22.dp),
+        ) {
+            items(
+                row.videos,
+                key = { "channel-" + row.playlistId.orEmpty() + "-" + it.id },
+            ) { video ->
+                ChannelVideoCard(video, onVideoSelected)
+            }
+        }
+    }
+}
+
+@Composable
+private fun ChannelVideoCard(
+    video: Video,
+    onVideoSelected: (Video) -> Unit,
+) {
+    val shape = RoundedCornerShape(22.dp)
+
+    Card(
+        onClick = { onVideoSelected(video) },
+        modifier = Modifier
+            .width(310.dp)
+            .height(230.dp),
+        shape = CardDefaults.shape(shape = shape),
+        colors = CardDefaults.colors(
+            containerColor = Panel,
+            contentColor = Color.White,
+            focusedContainerColor = Panel,
+            focusedContentColor = Color.White,
+            pressedContainerColor = Panel,
+            pressedContentColor = Color.White,
+        ),
+        border = CardDefaults.border(
+            focusedBorder = Border(
+                border = BorderStroke(3.dp, AccentStrong),
+                shape = shape,
+            ),
+        ),
+        scale = CardDefaults.scale(focusedScale = 1.04f),
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(170.dp)
+                    .clip(RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp))
+                    .background(Color(0xFF171421)),
+            ) {
+                AsyncImage(
+                    model = video.thumbnail,
+                    contentDescription = video.title,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                )
+
+                if (video.duration.isNotBlank()) {
+                    Surface(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(10.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = SurfaceDefaults.colors(containerColor = Color(0xDD000000)),
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            AsyncImage(
-                                model = video.thumbnail,
-                                contentDescription = video.title,
-                                modifier = Modifier.size(width = 188.dp, height = 106.dp),
-                            )
-                            Column(
-                                modifier = Modifier.padding(horizontal = 18.dp),
-                                verticalArrangement = Arrangement.spacedBy(5.dp),
-                            ) {
-                                Text(
-                                    video.title,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = Color.White,
-                                    maxLines = 2,
-                                )
-                                Text(
-                                    video.duration,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color(0xFFB9B2C5),
-                                )
-                            }
-                            Spacer(Modifier.weight(1f))
-                            Icon(
-                                Icons.Rounded.PlayArrow,
-                                contentDescription = "Play",
-                                modifier = Modifier.padding(end = 22.dp).size(30.dp),
-                                tint = Color(0xFFC59BFF),
-                            )
-                        }
+                        Text(
+                            video.duration,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            color = Color.White,
+                            style = MaterialTheme.typography.labelSmall,
+                        )
                     }
                 }
+            }
+
+            Column(
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 9.dp),
+                verticalArrangement = Arrangement.spacedBy(3.dp),
+            ) {
+                Text(
+                    video.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White,
+                    maxLines = 2,
+                )
+                Text(
+                    video.channel,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Muted,
+                    maxLines = 1,
+                )
             }
         }
     }
