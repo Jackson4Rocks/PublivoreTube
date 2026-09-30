@@ -30,7 +30,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Captions
+import androidx.compose.material.icons.rounded.ClosedCaption
 import androidx.compose.material.icons.rounded.ThumbDown
 import androidx.compose.material.icons.rounded.ThumbUp
 import androidx.compose.material.icons.rounded.MoreHoriz
@@ -299,7 +299,7 @@ fun YouTubePlayerScreen(
 
                 item {
                     ActionButton(
-                        icon = Icons.Rounded.Captions,
+                        icon = Icons.Rounded.ClosedCaption,
                         text = if (captionsEnabled) "Captions On" else "Captions",
                         onClick = {
                             captionsEnabled = !captionsEnabled
