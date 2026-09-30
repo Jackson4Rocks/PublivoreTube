@@ -69,6 +69,8 @@ import androidx.tv.material3.Surface
 import androidx.tv.material3.SurfaceDefaults
 import androidx.tv.material3.Text
 import tv.publivoretube.R
+import tv.publivoretube.data.GoogleAccount
+import tv.publivoretube.data.Subscription
 import tv.publivoretube.data.Video
 
 private val Canvas = Color(0xFF08070D)
@@ -114,9 +116,34 @@ fun HomeScreen(
     homeLoading: Boolean,
     searchLoading: Boolean,
     statusMessage: String?,
+    historyVideos: List<Video>,
+    subscriptions: List<Subscription>,
+    signedIn: Boolean,
+    account: GoogleAccount?,
+    oauthConfigured: Boolean,
+    authBusy: Boolean,
+    authCode: String?,
+    authUrl: String?,
+    autoplay: Boolean,
+    captions: Boolean,
+    rememberPosition: Boolean,
+    showThumbnails: Boolean,
+    reduceAnimations: Boolean,
+    highContrast: Boolean,
+    quality: String,
     onSearchQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
     onVideoSelected: (Video) -> Unit,
+    onSignIn: () -> Unit,
+    onSignOut: () -> Unit,
+    onClearHistory: () -> Unit,
+    onAutoplayChange: (Boolean) -> Unit,
+    onCaptionsChange: (Boolean) -> Unit,
+    onRememberPositionChange: (Boolean) -> Unit,
+    onThumbnailsChange: (Boolean) -> Unit,
+    onReduceAnimationsChange: (Boolean) -> Unit,
+    onHighContrastChange: (Boolean) -> Unit,
+    onQualityChange: (String) -> Unit,
 ) {
     var selectedNav by remember { mutableIntStateOf(0) }
 
@@ -147,6 +174,45 @@ fun HomeScreen(
                         onQueryChange = onSearchQueryChange,
                         onSearch = onSearch,
                         onVideoSelected = onVideoSelected,
+                    )
+
+                    2 -> SubscriptionsScreen(
+                        subscriptions = subscriptions,
+                        signedIn = signedIn,
+                        account = account,
+                        onSignIn = onSignIn,
+                    )
+
+                    3 -> HistoryScreen(
+                        videos = historyVideos,
+                        onVideoSelected = onVideoSelected,
+                        onClear = onClearHistory,
+                    )
+
+                    4 -> SettingsScreen(
+                        signedIn = signedIn,
+                        account = account,
+                        oauthConfigured = oauthConfigured,
+                        authBusy = authBusy,
+                        authCode = authCode,
+                        authUrl = authUrl,
+                        autoplay = autoplay,
+                        captions = captions,
+                        rememberPosition = rememberPosition,
+                        showThumbnails = showThumbnails,
+                        reduceAnimations = reduceAnimations,
+                        highContrast = highContrast,
+                        quality = quality,
+                        onAutoplayChange = onAutoplayChange,
+                        onCaptionsChange = onCaptionsChange,
+                        onRememberPositionChange = onRememberPositionChange,
+                        onThumbnailsChange = onThumbnailsChange,
+                        onReduceAnimationsChange = onReduceAnimationsChange,
+                        onHighContrastChange = onHighContrastChange,
+                        onQualityChange = onQualityChange,
+                        onSignIn = onSignIn,
+                        onSignOut = onSignOut,
+                        onClearHistory = onClearHistory,
                     )
 
                     5 -> AboutScreen()
