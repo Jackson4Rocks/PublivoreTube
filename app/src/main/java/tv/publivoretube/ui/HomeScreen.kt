@@ -908,14 +908,17 @@ private fun AboutScreen() {
                     horizontalArrangement = Arrangement.spacedBy(18.dp),
                 ) {
                     Surface(
-                        modifier = Modifier.size(70.dp),
-                        shape = RoundedCornerShape(20.dp),
+                        modifier = Modifier.size(86.dp),
+                        shape = RoundedCornerShape(26.dp),
                         colors = SurfaceDefaults.colors(containerColor = Color(0xFF281840)),
                     ) {
-                        Image(
-                            painter = painterResource(R.drawable.ic_publivoretube_mark),
-                            contentDescription = null,
-                            modifier = Modifier.padding(5.dp),
+                        AsyncImage(
+                            model = "https://github.com/Jackson4Rocks.png?size=256",
+                            contentDescription = "Leon Sony",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(26.dp)),
+                            contentScale = ContentScale.Crop,
                         )
                     }
 
