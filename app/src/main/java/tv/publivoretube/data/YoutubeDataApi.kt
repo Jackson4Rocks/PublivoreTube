@@ -14,122 +14,130 @@ class YoutubeDataApi(
     val isConfigured: Boolean
         get() = apiKey.isNotBlank()
 
-    suspend fun mostPopular(regionCode: String = "IN", maxResults: Int = 12): List<Video> =
-        withContext(Dispatchers.IO) {
-            requireConfigured()
+    suspend fun mostPopular(
+        regionCode: String = "IN",
+        maxResults: Int = 12,
+    ): List<Video> = withContext(Dispatchers.IO) {
+        requireConfigured()
 
-            val url = baseUrl + "/videos?part=snippet,contentDetails,statistics" +
-                "&chart=mostPopular" +
-                "&regionCode=" + encode(regionCode) +
-                "&maxResults=" + maxResults +
-                "&key=" + encode(apiKey)
+        val url = baseUrl + "/videos?part=snippet,contentDetails,statistics" +
+            "&chart=mostPopular" +
+            "&regionCode=" + encode(regionCode) +
+            "&maxResults=" + maxResults +
+            "&key=" + encode(apiKey)
 
-            val json = get(url)
-            val items = json.getJSONArray("items")
+        val json = get(url)
+        val items = json.getJSONArray("items")
 
-            buildList {
-                for (index in 0 until items.length()) {
-                    val item = items.getJSONObject(index)
-                    val snippet = item.getJSONObject("snippet")
-                    val id = item.getString("id")
+        buildList {
+            for (index in 0 until items.length()) {
+                val item = items.getJSONObject(index)
+                val snippet = item.getJSONObject("snippet")
+                val id = item.getString("id")
 
-                    add(
-                        Video(
-                            id = id,
-                            title = cleanText(snippet.optString("title")),
-                            channel = cleanText(snippet.optString("channelTitle")),
-                            duration = item.optJSONObject("contentDetails")
-                                ?.optString("duration")
-                                ?.let(::formatDuration)
-                                .orEmpty(),
-                            thumbnail = thumbnailUrl(snippet),
-                            youtubeUrl = "https://www.youtube.com/watch?v=$id",
-                        ),
-                    )
+                add(
+                    Video(
+                        id = id,
+                        title = cleanText(snippet.optString("title")),
+                        channel = cleanText(snippet.optString("channelTitle")),
+                        duration = item.optJSONObject("contentDetails")
+                            ?.optString("duration")
+                            ?.let(::formatDuration)
+                            .orEmpty(),
+                        thumbnail = thumbnailUrl(snippet),
+                        youtubeUrl = "https://www.youtube.com/watch?v=$id",
+                    ),
+                )
+            }
+        }
+    }
+
+    suspend fun search(
+        query: String,
+        maxResults: Int = 18,
+    ): List<Video> = withContext(Dispatchers.IO) {
+        requireConfigured()
+
+        if (query.isBlank()) {
+            return@withContext emptyList()
+        }
+
+        val searchUrl = baseUrl + "/search?part=snippet" +
+            "&type=video" +
+            "&q=" + encode(query.trim()) +
+            "&maxResults=" + maxResults +
+            "&safeSearch=moderate" +
+            "&regionCode=IN" +
+            "&key=" + encode(apiKey)
+
+        val searchJson = get(searchUrl)
+        val searchItems = searchJson.getJSONArray("items")
+
+        if (searchItems.length() == 0) {
+            return@withContext emptyList()
+        }
+
+        val ids = buildList {
+            for (index in 0 until searchItems.length()) {
+                val id = searchItems
+                    .getJSONObject(index)
+                    .getJSONObject("id")
+                    .optString("videoId")
+
+                if (id.isNotBlank()) {
+                    add(id)
                 }
             }
         }
 
-    suspend fun search(query: String, maxResults: Int = 18): List<Video> =
-        withContext(Dispatchers.IO) {
-            requireConfigured()
+        if (ids.isEmpty()) {
+            return@withContext emptyList()
+        }
 
-            if (query.isBlank()) {
-                return@withContext emptyList()
-            }
+        val detailsUrl = baseUrl + "/videos?part=contentDetails,statistics" +
+            "&id=" + encode(ids.joinToString(",")) +
+            "&key=" + encode(apiKey)
 
-            val searchUrl = baseUrl + "/search?part=snippet" +
-                "&type=video" +
-                "&q=" + encode(query.trim()) +
-                "&maxResults=" + maxResults +
-                "&safeSearch=moderate" +
-                "&regionCode=IN" +
-                "&key=" + encode(apiKey)
+        val detailsJson = get(detailsUrl)
+        val detailsById = mutableMapOf<String, JSONObject>()
 
-            val searchJson = get(searchUrl)
-            val searchItems = searchJson.getJSONArray("items")
+        val detailItems = detailsJson.getJSONArray("items")
+        for (index in 0 until detailItems.length()) {
+            val item = detailItems.getJSONObject(index)
+            detailsById[item.getString("id")] = item
+        }
 
-            if (searchItems.length() == 0) {
-                return@withContext emptyList()
-            }
+        buildList {
+            for (index in 0 until searchItems.length()) {
+                val item = searchItems.getJSONObject(index)
+                val id = item
+                    .getJSONObject("id")
+                    .optString("videoId")
 
-            val ids = buildList {
-                for (index in 0 until searchItems.length()) {
-                    val id = searchItems.getJSONObject(index)
-                        .getJSONObject("id")
-                        .optString("videoId")
-
-                    if (id.isNotBlank()) {
-                        add(id)
-                    }
+                if (id.isBlank()) {
+                    continue
                 }
-            }
 
-            if (ids.isEmpty()) {
-                return@withContext emptyList()
-            }
+                val snippet = item.getJSONObject("snippet")
+                val details = detailsById[id]
 
-            val detailsUrl = baseUrl + "/videos?part=contentDetails,statistics" +
-                "&id=" + encode(ids.joinToString(",")) +
-                "&key=" + encode(apiKey)
-
-            val detailsJson = get(detailsUrl)
-            val detailsById = mutableMapOf<String, JSONObject>()
-            val detailItems = detailsJson.getJSONArray("items")
-
-            for (index in 0 until detailItems.length()) {
-                val item = detailItems.getJSONObject(index)
-                detailsById[item.getString("id")] = item
-            }
-
-            buildList {
-                for (index in 0 until searchItems.length()) {
-                    val item = searchItems.getJSONObject(index)
-                    val id = item.getJSONObject("id").optString("videoId")
-
-                    if (id.isBlank()) {
-                        continue
-                    }
-
-                    val snippet = item.getJSONObject("snippet")
-                    val details = detailsById[id]
-
-                    add(
-                        Video(
-                            id = id,
-                            title = cleanText(snippet.optString("title")),
-                            channel = cleanText(snippet.optString("channelTitle")),
-                            duration = details?.optJSONObject("contentDetails")
-                                ?.optString("duration")
-                                ?.let(::formatDuration)
-                                .orEmpty(),
-                            thumbnail = thumbnailUrl(snippet),
-                            youtubeUrl = "https://www.youtube.com/watch?v=$id",
-                        ),
-                    )
-                }
+                add(
+                    Video(
+                        id = id,
+                        title = cleanText(snippet.optString("title")),
+                        channel = cleanText(snippet.optString("channelTitle")),
+                        duration = details
+                            ?.optJSONObject("contentDetails")
+                            ?.optString("duration")
+                            ?.let(::formatDuration)
+                            .orEmpty(),
+                        thumbnail = thumbnailUrl(snippet),
+                        youtubeUrl = "https://www.youtube.com/watch?v=$id",
+                    ),
+                )
             }
         }
+    }
 
     private fun get(urlString: String): JSONObject {
         val connection = (URL(urlString).openConnection() as HttpURLConnection).apply {
@@ -141,6 +149,7 @@ class YoutubeDataApi(
 
         return try {
             val responseCode = connection.responseCode
+
             val stream = if (responseCode in 200..299) {
                 connection.inputStream
             } else {
@@ -174,14 +183,21 @@ class YoutubeDataApi(
     private fun thumbnailUrl(snippet: JSONObject): String? {
         val thumbnails = snippet.optJSONObject("thumbnails") ?: return null
 
-        return thumbnails.optJSONObject("high")?.optString("url")?.takeIf(String::isNotBlank)
-            ?: thumbnails.optJSONObject("medium")?.optString("url")?.takeIf(String::isNotBlank)
-            ?: thumbnails.optJSONObject("default")?.optString("url")?.takeIf(String::isNotBlank)
+        return thumbnails.optJSONObject("high")
+            ?.optString("url")
+            ?.takeIf(String::isNotBlank)
+            ?: thumbnails.optJSONObject("medium")
+                ?.optString("url")
+                ?.takeIf(String::isNotBlank)
+            ?: thumbnails.optJSONObject("default")
+                ?.optString("url")
+                ?.takeIf(String::isNotBlank)
     }
 
     private fun cleanText(value: String): String =
-        value.replace("&#39;", "'")
-            .replace("&quot;", """)
+        value
+            .replace("&#39;", "'")
+            .replace("&quot;", 34.toChar().toString())
             .replace("&amp;", "&")
             .replace("&lt;", "<")
             .replace("&gt;", ">")
